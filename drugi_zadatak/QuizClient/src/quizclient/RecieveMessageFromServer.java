@@ -18,11 +18,13 @@ public class RecieveMessageFromServer implements Runnable{
     
     QuizClient parent;
     BufferedReader br;
+    ArrayList<QuizMemberClient> loadedClientsFromFile;
     
     public RecieveMessageFromServer(QuizClient parent)
     {
         this.parent = parent;
         this.br     = parent.getBr();
+        this.loadedClientsFromFile = new ArrayList<>();
     }
 
     @Override
@@ -41,30 +43,43 @@ public class RecieveMessageFromServer implements Runnable{
                 
                 if(line.startsWith("Users ="))
                 {
-                
-                    /*
-                        OVO NE MOZE OVAKO, MORAS DRUGACIJE DA SMISLIS 
-                        MORAS SVE PRISUTNE DA PRIMIS I ONDA DA SVAKI SPLITUJES
-                    */
-                    
                     String[] dataFromServer = line.split("=");
                     String[] username_password_role_points = dataFromServer[1].split(",");
-                    //String[] username_password_role_points = line.split(":");
                     
-                    for(String user : username_password_role_points)
+                    for (String user : username_password_role_points) 
                     {
-                        System.out.println(user);
+                        String[] userDataParts = user.split(":");
+                        
+                        if (userDataParts.length == 4) 
+                        {
+                            int points = Integer.parseInt(userDataParts[3].trim());
+                            
+                            QuizMemberClient client = new QuizMemberClient(userDataParts[0].trim(), // Username
+                                                                           userDataParts[1].trim(), // Password
+                                                                           userDataParts[2].trim(), // Role
+                                                                           points); // Points
+                            loadedClientsFromFile.add(client);
+                        } 
+                        else 
+                        {
+                            System.out.println("Invalid user data format: " + user);
+                        }
                     }
-                  
                     
+                    System.out.println("Trenutno prisutni : ");
+                    
+                    for(QuizMemberClient member : loadedClientsFromFile)
+                    {
+                        System.out.println(member);
+                    }
                     //System.out.println(line);
+                     parent.updateActiveQuizMembers(loadedClientsFromFile);
                 }
             }
             catch(IOException ex)
             {
                 Logger.getLogger(RecieveMessageFromServer.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
         }
     }
 }

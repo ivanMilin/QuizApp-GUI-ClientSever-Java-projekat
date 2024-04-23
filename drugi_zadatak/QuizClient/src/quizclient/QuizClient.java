@@ -10,11 +10,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
@@ -30,40 +30,60 @@ public class QuizClient extends javax.swing.JFrame {
     
     AdminGUI adminGUI;
     ContestantGUI contestantGUI;
+    ArrayList<QuizMemberClient> activeMembers;
    
     /**
      * Creates new form QuizClient
      */
     public QuizClient() {
-        initComponents();   
+        this.activeMembers = new ArrayList<>(); 
+        initComponents(); 
+        
+        try
+        {
+            this.socket = new Socket("127.0.0.1", 6001);
+            this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()), true); 
+            this.rmfs = new RecieveMessageFromServer(this);
+            Thread thr = new Thread(rmfs);
+            thr.start();
+
+        }
+        catch(IOException ex)
+        {
+            Logger.getLogger(QuizClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public BufferedReader getBr() {
         return br;
     }
     
-    public String get_jCheckBox_Pressed()
+    public String get_jCheckBox_Pressed_contestant()
     {
         if(jCheckBox_contestant.isSelected())
             return "contestant";
+        else
+            return "false";
+    }
+    
+    public String get_jCheckBox_Pressed_admin()
+    {
         if(jCheckBox_admin.isSelected())
             return "admin";
         else
             return "false";
     }
     
-    public boolean getLoginPressed()
+    public void updateActiveQuizMembers(ArrayList<QuizMemberClient> updatedList)
     {
-        if(jButton_login.isSelected())
-            return true;
-        else
-            return false;
+        this.activeMembers = updatedList;
     }
 
-    public JPasswordField getjPasswordField_password() {
-        return jPasswordField_password;
+    public ArrayList<QuizMemberClient> getActiveMembers() {
+        return activeMembers;
     }
-
+    
     public JTextField getjTextField_username() {
         return jTextField_username;
     }
@@ -82,12 +102,11 @@ public class QuizClient extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jTextField_username = new javax.swing.JTextField();
-        jPasswordField_password = new javax.swing.JPasswordField();
         jButton_login = new javax.swing.JButton();
         jButton_exit = new javax.swing.JButton();
-        jCheckBox_showPassword = new javax.swing.JCheckBox();
         jCheckBox_admin = new javax.swing.JCheckBox();
         jCheckBox_contestant = new javax.swing.JCheckBox();
+        jTextField_password = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LoginGUI");
@@ -102,8 +121,6 @@ public class QuizClient extends javax.swing.JFrame {
         jLabel3.setText("Password :");
 
         jTextField_username.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-
-        jPasswordField_password.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
         jButton_login.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton_login.setText("Login");
@@ -121,18 +138,13 @@ public class QuizClient extends javax.swing.JFrame {
             }
         });
 
-        jCheckBox_showPassword.setText("Show Password");
-        jCheckBox_showPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox_showPasswordActionPerformed(evt);
-            }
-        });
-
         buttonGroup1.add(jCheckBox_admin);
         jCheckBox_admin.setText("Admin");
 
         buttonGroup1.add(jCheckBox_contestant);
         jCheckBox_contestant.setText("Contestant");
+
+        jTextField_password.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -141,27 +153,23 @@ public class QuizClient extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(55, 55, 55)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jCheckBox_showPassword)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2))
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2))
-                        .addGap(37, 37, 37)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton_exit)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton_login))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel1)
-                                    .addGap(89, 89, 89))
-                                .addComponent(jTextField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jPasswordField_password, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jCheckBox_admin)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jCheckBox_contestant)))))
+                        .addComponent(jButton_exit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_login))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(89, 89, 89))
+                    .addComponent(jTextField_username, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jCheckBox_admin)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCheckBox_contestant))
+                    .addComponent(jTextField_password))
                 .addContainerGap(111, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -180,14 +188,12 @@ public class QuizClient extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jPasswordField_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addComponent(jCheckBox_showPassword)
-                .addGap(18, 18, 18)
+                    .addComponent(jTextField_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(67, 67, 67)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_login)
                     .addComponent(jButton_exit))
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(59, Short.MAX_VALUE))
         );
 
         pack();
@@ -196,76 +202,61 @@ public class QuizClient extends javax.swing.JFrame {
 
     private void jButton_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_loginActionPerformed
         // TODO add your handling code here:
-        
         if(jTextField_username.getText().equals(""))
         {
             JOptionPane.showMessageDialog(null, "Insert username");
         }
-        else if(jPasswordField_password.getText().equals(""))
+        else if(jTextField_password.getText().equals(""))
         {
             JOptionPane.showMessageDialog(null, "Insert password");
         }
-        
-        else if(jTextField_username.getText().equals("admin") && jPasswordField_password.getText().equals("admin") && jCheckBox_admin.isSelected())
+        else if(!jCheckBox_admin.isSelected() && !jCheckBox_contestant.isSelected())
         {
-            try
-            {
-                this.socket = new Socket("127.0.0.1", 6001);
-                this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-                this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()), true); 
-                this.rmfs = new RecieveMessageFromServer(this);
-                Thread thr = new Thread(rmfs);
-                thr.start();
-
-            }
-            catch(IOException ex)
-            {
-                Logger.getLogger(QuizClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            adminGUI = new AdminGUI(this);
-            adminGUI.show();
-            dispose();
-        }
-        
-        else if(jTextField_username.getText().equals("ivan") && jPasswordField_password.getText().equals("milin") && jCheckBox_contestant.isSelected())
-        {
-            try
-            {
-                this.socket = new Socket("127.0.0.1", 6001);
-                this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-                this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()), true); 
-                this.rmfs = new RecieveMessageFromServer(this);
-                Thread thr = new Thread(rmfs);
-                thr.start();
-
-            }
-            catch(IOException ex)
-            {
-                Logger.getLogger(QuizClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            contestantGUI = new ContestantGUI(this);
-            contestantGUI.show();
-            dispose();
+            JOptionPane.showMessageDialog(null, "Chose role");
         }
         else
         {
-            JOptionPane.showMessageDialog(null, "Wrong username, password or you didn't choose admin/contestant");
-        }   
+            boolean adminFound = false;
+            boolean contestantFound = false;
+            
+            for(QuizMemberClient client : activeMembers)
+            {
+                if(client.getUserName().equals(jTextField_username.getText()) && client.getPassword().equals(jTextField_password.getText()))
+                {
+                    if(client.getRole().equals(this.get_jCheckBox_Pressed_admin()))
+                    {
+                        adminFound = true;
+                        break;
+                    }
+                    else if(client.getRole().equals(this.get_jCheckBox_Pressed_contestant()))
+                    {
+                        contestantFound = true;
+                        break;
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null, "You didn't choose admin/contestant");
+                    }
+                }
+            }
+            
+            // Promena GUIa iz LOGIN-GUI u AdminGUI
+            if(adminFound)
+            {
+                adminGUI = new AdminGUI(this);
+                adminGUI.show();
+                dispose();
+            }
+            // Promena GUIa iz LOGIN-GUI u ContestantGUI
+            if(contestantFound)
+            {
+                contestantGUI = new ContestantGUI(this);
+                contestantGUI.show();
+                dispose();
+            }
+            
+        }         
     }//GEN-LAST:event_jButton_loginActionPerformed
-
-    private void jCheckBox_showPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_showPasswordActionPerformed
-        // TODO add your handling code here:
-        if(jCheckBox_showPassword.isSelected())
-        {
-            jPasswordField_password.setEchoChar((char)0);
-        }
-        else
-        {
-            jPasswordField_password.setEchoChar('*');
-        }
-    }//GEN-LAST:event_jCheckBox_showPasswordActionPerformed
 
     private void jButton_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_exitActionPerformed
         // TODO add your handling code here:
@@ -313,11 +304,10 @@ public class QuizClient extends javax.swing.JFrame {
     private javax.swing.JButton jButton_login;
     private javax.swing.JCheckBox jCheckBox_admin;
     private javax.swing.JCheckBox jCheckBox_contestant;
-    private javax.swing.JCheckBox jCheckBox_showPassword;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPasswordField jPasswordField_password;
+    private javax.swing.JTextField jTextField_password;
     private javax.swing.JTextField jTextField_username;
     // End of variables declaration//GEN-END:variables
 }

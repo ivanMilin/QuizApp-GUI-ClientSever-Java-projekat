@@ -6,6 +6,7 @@ package quizclient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,12 +16,17 @@ public class AdminGUI extends javax.swing.JFrame {
 
     QuizClient parent;
     private BufferedReader br;
+    private ArrayList<QuizMemberClient> activeMembers;
     /**
      * Creates new form AdminGUI
      */
     public AdminGUI(QuizClient parent) {
+        this.activeMembers = parent.getActiveMembers();
+        this.parent = parent;
         this.br = parent.getBr();
         initComponents();
+        
+        cbPresentMembers.removeAllItems();
     }
 
     /**
@@ -50,7 +56,7 @@ public class AdminGUI extends javax.swing.JFrame {
         jPasswordField1 = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        presentContestants = new javax.swing.JComboBox<>();
+        cbPresentMembers = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AdminGUI");
@@ -103,7 +109,12 @@ public class AdminGUI extends javax.swing.JFrame {
 
         jButton2.setText("Remove");
 
-        presentContestants.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbPresentMembers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbPresentMembers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPresentMembersActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -129,7 +140,7 @@ public class AdminGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(40, 40, 40)
-                                .addComponent(presentContestants, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jCheckBox5)
@@ -173,7 +184,7 @@ public class AdminGUI extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(presentContestants, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -197,6 +208,14 @@ public class AdminGUI extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cbPresentMembersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPresentMembersActionPerformed
+        // TODO add your handling code here:
+        for(QuizMemberClient member : activeMembers)
+        {
+            cbPresentMembers.addItem(member.getUserName());
+        }
+    }//GEN-LAST:event_cbPresentMembersActionPerformed
 
     /**
      * @param args the command line arguments
@@ -238,6 +257,7 @@ public class AdminGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JComboBox<String> cbPresentMembers;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JCheckBox jCheckBox1;
@@ -254,6 +274,5 @@ public class AdminGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JComboBox<String> presentContestants;
     // End of variables declaration//GEN-END:variables
 }

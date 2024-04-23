@@ -10,4 +10,8 @@ package quizserver;
  */
 public class QuizMemberServer {
     
+    private String userName;
+    private String password;
+    private String role;
+    private int points;
 }
