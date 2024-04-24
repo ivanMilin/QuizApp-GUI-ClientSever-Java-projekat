@@ -7,6 +7,7 @@ package quizclient;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -25,7 +26,6 @@ public class AdminGUI extends javax.swing.JFrame {
         this.parent = parent;
         this.br = parent.getBr();
         initComponents();
-        
         cbPresentMembers.removeAllItems();
     }
 
@@ -48,14 +48,14 @@ public class AdminGUI extends javax.swing.JFrame {
         jCheckBox4 = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jCheckBox5 = new javax.swing.JCheckBox();
-        jCheckBox6 = new javax.swing.JCheckBox();
+        jCheckBox_admin = new javax.swing.JCheckBox();
+        jCheckBox_contestant = new javax.swing.JCheckBox();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jTextField_username = new javax.swing.JTextField();
+        jTextField_password = new javax.swing.JPasswordField();
+        jButton_addUser = new javax.swing.JButton();
+        jButton_removeUser = new javax.swing.JButton();
         cbPresentMembers = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -89,11 +89,11 @@ public class AdminGUI extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel4.setText("Add or remove participants :");
 
-        buttonGroup2.add(jCheckBox5);
-        jCheckBox5.setText("Admin");
+        buttonGroup2.add(jCheckBox_admin);
+        jCheckBox_admin.setText("Admin");
 
-        buttonGroup2.add(jCheckBox6);
-        jCheckBox6.setText("Contestant");
+        buttonGroup2.add(jCheckBox_contestant);
+        jCheckBox_contestant.setText("Contestant");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel5.setText("Username :");
@@ -101,13 +101,23 @@ public class AdminGUI extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel6.setText("Password :");
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_username.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        jPasswordField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_password.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        jButton1.setText("Add");
+        jButton_addUser.setText("Add");
+        jButton_addUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_addUserActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Remove");
+        jButton_removeUser.setText("Remove");
+        jButton_removeUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_removeUserActionPerformed(evt);
+            }
+        });
 
         cbPresentMembers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbPresentMembers.addActionListener(new java.awt.event.ActionListener() {
@@ -143,7 +153,7 @@ public class AdminGUI extends javax.swing.JFrame {
                                 .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jCheckBox5)
+                                    .addComponent(jCheckBox_admin)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel2)
                                         .addGap(18, 18, 18)
@@ -156,17 +166,17 @@ public class AdminGUI extends javax.swing.JFrame {
                                         .addComponent(jCheckBox3)
                                         .addGap(18, 18, 18)
                                         .addComponent(jCheckBox4))
-                                    .addComponent(jCheckBox6)))
+                                    .addComponent(jCheckBox_contestant)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(264, 264, 264)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jButton2)
+                                        .addComponent(jButton_removeUser)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton1))
+                                        .addComponent(jButton_addUser))
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                        .addComponent(jTextField_password, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap(108, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -188,20 +198,20 @@ public class AdminGUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jCheckBox5)
-                    .addComponent(jCheckBox6))
+                    .addComponent(jCheckBox_admin)
+                    .addComponent(jCheckBox_contestant))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField_username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jButton_addUser)
+                    .addComponent(jButton_removeUser))
                 .addContainerGap(46, Short.MAX_VALUE))
         );
 
@@ -211,11 +221,72 @@ public class AdminGUI extends javax.swing.JFrame {
 
     private void cbPresentMembersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPresentMembersActionPerformed
         // TODO add your handling code here:
+        //cbPresentMembers.removeAllItems();
+        //System.out.println("Selected : " + cbPresentMembers);
         for(QuizMemberClient member : activeMembers)
         {
             cbPresentMembers.addItem(member.getUserName());
         }
     }//GEN-LAST:event_cbPresentMembersActionPerformed
+
+    private void jButton_addUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_addUserActionPerformed
+        // TODO add your handling code here:
+        if(jCheckBox_admin.isSelected())
+        {
+            int points = 0;
+            String role = "admin";
+            String username = jTextField_username.getText();
+            String password = jTextField_password.getText();
+        
+            QuizMemberClient member = new QuizMemberClient(username, password, role, points);
+        
+            activeMembers.add(member);
+            cbPresentMembers.addItem(username);
+        }
+        
+        if(jCheckBox_contestant.isSelected())
+        {
+            int points = 0;
+            String role = "contestant";
+            String username = jTextField_username.getText();
+            String password = jTextField_password.getText();
+        
+            QuizMemberClient member = new QuizMemberClient(username, password, role, points);
+        
+            activeMembers.add(member);
+            cbPresentMembers.addItem(username);
+        }
+        
+        System.out.println("AdminGUI :");
+        cbPresentMembers.removeAllItems();
+        for(QuizMemberClient member : activeMembers)
+        {
+            System.out.println(member);
+        }
+    }//GEN-LAST:event_jButton_addUserActionPerformed
+
+    private void jButton_removeUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_removeUserActionPerformed
+        // TODO add your handling code here:
+        Iterator<QuizMemberClient> it = this.activeMembers.iterator();
+        while(it.hasNext())
+        {
+            if(it.next().getUserName().equals(jTextField_username.getText()))
+            {
+                it.remove();
+            }
+        }
+        cbPresentMembers.removeAllItems();
+        System.out.println("AdminGUI :");
+        for(QuizMemberClient member : activeMembers)
+        {
+            System.out.println(member);
+        }
+        
+        for(QuizMemberClient member : activeMembers)
+        {
+            cbPresentMembers.addItem(member.getUserName());
+        }
+    }//GEN-LAST:event_jButton_removeUserActionPerformed
 
     /**
      * @param args the command line arguments
@@ -258,21 +329,21 @@ public class AdminGUI extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JComboBox<String> cbPresentMembers;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton_addUser;
+    private javax.swing.JButton jButton_removeUser;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
-    private javax.swing.JCheckBox jCheckBox6;
+    private javax.swing.JCheckBox jCheckBox_admin;
+    private javax.swing.JCheckBox jCheckBox_contestant;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField jTextField_password;
+    private javax.swing.JTextField jTextField_username;
     // End of variables declaration//GEN-END:variables
 }

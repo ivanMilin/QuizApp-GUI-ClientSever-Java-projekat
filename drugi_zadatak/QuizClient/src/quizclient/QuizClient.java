@@ -221,6 +221,12 @@ public class QuizClient extends javax.swing.JFrame {
             
             for(QuizMemberClient client : activeMembers)
             {
+                /*
+                    FALI REGEX - FALI REGEX - FALI REGEX - FALI REGEX
+                    FALI REGEX - FALI REGEX - FALI REGEX - FALI REGEX
+                    FALI REGEX - FALI REGEX - FALI REGEX - FALI REGEX
+                */
+                
                 if(client.getUserName().equals(jTextField_username.getText()) && client.getPassword().equals(jTextField_password.getText()))
                 {
                     if(client.getRole().equals(this.get_jCheckBox_Pressed_admin()))
