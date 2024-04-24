@@ -21,7 +21,6 @@ public class QuizServer {
     private ServerSocket ssocket;
     private int port;
     private ArrayList<ConnectedQuizClient> clients;
-    private ArrayList<QuizMemberServer> members;
     
     public ServerSocket getSsocket()
     {
@@ -76,7 +75,6 @@ public class QuizServer {
     public QuizServer(int port)
     {
         this.clients = new ArrayList<>();
-        this.members = new ArrayList<>();
         
         try
         {

@@ -81,7 +81,7 @@ public class ConnectedQuizClient implements Runnable{
         }
 
         String porukaZaSlanje = "Users =" + oneString_dataFrom_userTxt.toString();
-        System.out.println(porukaZaSlanje);
+        System.out.println("iz fajla " + porukaZaSlanje);
         this.pw.println(porukaZaSlanje);
         
     }

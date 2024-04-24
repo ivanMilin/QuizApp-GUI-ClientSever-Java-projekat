@@ -7,7 +7,11 @@ package quizclient;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -27,6 +31,9 @@ public class AdminGUI extends javax.swing.JFrame {
         this.br = parent.getBr();
         initComponents();
         cbPresentMembers.removeAllItems();
+        for (QuizMemberClient member : activeMembers) {
+            cbPresentMembers.addItem(member.getUserName()); // Assuming getName() returns member's name
+        }
     }
 
     /**
@@ -56,6 +63,7 @@ public class AdminGUI extends javax.swing.JFrame {
         jTextField_password = new javax.swing.JPasswordField();
         jButton_addUser = new javax.swing.JButton();
         jButton_removeUser = new javax.swing.JButton();
+        jButton_sendQuestionSet = new javax.swing.JButton();
         cbPresentMembers = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -69,19 +77,19 @@ public class AdminGUI extends javax.swing.JFrame {
 
         buttonGroup1.add(jCheckBox1);
         jCheckBox1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox1.setText("1. Set");
+        jCheckBox1.setText("1");
 
         buttonGroup1.add(jCheckBox2);
         jCheckBox2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox2.setText("2. Set");
+        jCheckBox2.setText("2");
 
         buttonGroup1.add(jCheckBox3);
         jCheckBox3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox3.setText("3. Set");
+        jCheckBox3.setText("3");
 
         buttonGroup1.add(jCheckBox4);
         jCheckBox4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox4.setText("4. Set");
+        jCheckBox4.setText("4");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel3.setText("Chose participant to send questions  :");
@@ -119,10 +127,10 @@ public class AdminGUI extends javax.swing.JFrame {
             }
         });
 
-        cbPresentMembers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cbPresentMembers.addActionListener(new java.awt.event.ActionListener() {
+        jButton_sendQuestionSet.setText("Posalji pitanja");
+        jButton_sendQuestionSet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbPresentMembersActionPerformed(evt);
+                jButton_sendQuestionSetActionPerformed(evt);
             }
         });
 
@@ -135,49 +143,49 @@ public class AdminGUI extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(196, 196, 196))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(124, 124, 124)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField_password, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(124, 124, 124)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel6)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(40, 40, 40)
-                                .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jCheckBox_admin)
-                                    .addGroup(layout.createSequentialGroup()
+                                .addGap(270, 270, 270)
+                                .addComponent(jButton_removeUser)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton_addUser))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                         .addComponent(jLabel2)
-                                        .addGap(18, 18, 18)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jCheckBox1)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jCheckBox2)))
+                                        .addComponent(jCheckBox2))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jCheckBox_admin)))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jCheckBox3)
                                         .addGap(18, 18, 18)
                                         .addComponent(jCheckBox4))
-                                    .addComponent(jCheckBox_contestant)))
+                                    .addComponent(jCheckBox_contestant, javax.swing.GroupLayout.Alignment.TRAILING)))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(264, 264, 264)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jButton_removeUser)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton_addUser))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jTextField_password, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jTextField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
-                .addContainerGap(108, Short.MAX_VALUE))
+                                .addContainerGap()
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton_sendQuestionSet, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap(124, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -194,6 +202,7 @@ public class AdminGUI extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
+                    .addComponent(jButton_sendQuestionSet)
                     .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -212,57 +221,72 @@ public class AdminGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_addUser)
                     .addComponent(jButton_removeUser))
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cbPresentMembersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPresentMembersActionPerformed
-        // TODO add your handling code here:
-        //cbPresentMembers.removeAllItems();
-        //System.out.println("Selected : " + cbPresentMembers);
-        for(QuizMemberClient member : activeMembers)
-        {
-            cbPresentMembers.addItem(member.getUserName());
-        }
-    }//GEN-LAST:event_cbPresentMembersActionPerformed
-
     private void jButton_addUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_addUserActionPerformed
         // TODO add your handling code here:
-        if(jCheckBox_admin.isSelected())
-        {
-            int points = 0;
-            String role = "admin";
-            String username = jTextField_username.getText();
-            String password = jTextField_password.getText();
-        
-            QuizMemberClient member = new QuizMemberClient(username, password, role, points);
-        
-            activeMembers.add(member);
-            cbPresentMembers.addItem(username);
-        }
-        
-        if(jCheckBox_contestant.isSelected())
-        {
-            int points = 0;
-            String role = "contestant";
-            String username = jTextField_username.getText();
-            String password = jTextField_password.getText();
-        
-            QuizMemberClient member = new QuizMemberClient(username, password, role, points);
-        
-            activeMembers.add(member);
-            cbPresentMembers.addItem(username);
-        }
-        
-        System.out.println("AdminGUI :");
-        cbPresentMembers.removeAllItems();
-        for(QuizMemberClient member : activeMembers)
-        {
-            System.out.println(member);
-        }
+        if(jCheckBox_admin.isSelected() || jCheckBox_contestant.isSelected())
+            {
+                if(jCheckBox_admin.isSelected())
+                {
+                    int points = 0;
+                    String role = "admin";
+                    String username = jTextField_username.getText();
+                    String password = jTextField_password.getText();
+
+                    QuizMemberClient member = new QuizMemberClient(username, password, role, points);
+
+                    activeMembers.add(member);
+                    cbPresentMembers.addItem(username);
+                    
+                    System.out.println("AdminGUI :");
+                    cbPresentMembers.removeAllItems();
+                    
+                    for (QuizMemberClient cb_member : activeMembers) {
+                        cbPresentMembers.addItem(cb_member.getUserName()); // Assuming getName() returns member's name
+                    }
+                    
+                    for(QuizMemberClient printmember : activeMembers)
+                    {
+                        System.out.println(printmember);
+                    }
+                    System.out.println("");
+                }
+                else if(jCheckBox_contestant.isSelected())
+                {
+                    int points = 0;
+                    String role = "contestant";
+                    String username = jTextField_username.getText();
+                    String password = jTextField_password.getText();
+
+                    QuizMemberClient member = new QuizMemberClient(username, password, role, points);
+
+                    activeMembers.add(member);
+                    cbPresentMembers.addItem(username);
+                
+                    System.out.println("AdminGUI :");
+                    cbPresentMembers.removeAllItems();
+                    
+                    for (QuizMemberClient cb_member : activeMembers) {
+                        cbPresentMembers.addItem(cb_member.getUserName()); // Assuming getName() returns member's name
+                    }
+                    
+                    for(QuizMemberClient printmember : activeMembers)
+                    {
+                        System.out.println(printmember);
+                    }
+                    System.out.println("");
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "You forgot to choose role");
+            }
     }//GEN-LAST:event_jButton_addUserActionPerformed
 
     private void jButton_removeUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_removeUserActionPerformed
@@ -287,6 +311,33 @@ public class AdminGUI extends javax.swing.JFrame {
             cbPresentMembers.addItem(member.getUserName());
         }
     }//GEN-LAST:event_jButton_removeUserActionPerformed
+
+    private void jButton_sendQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendQuestionSetActionPerformed
+        // TODO add your handling code here:
+        
+
+        ButtonModel selectedModel = buttonGroup1.getSelection();
+        
+        if(selectedModel != null)
+        {
+            Enumeration<AbstractButton> buttons = buttonGroup1.getElements();
+            while(buttons.hasMoreElements())
+            {
+                AbstractButton button = buttons.nextElement();
+                if(button.isSelected())
+                {
+                            String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
+                            System.out.println("SendQuestionSetTo :" + selectedMemberName + ": question set :" + button.getText());
+                            String porukaZaSlanje = "SendQuestionSetTo :" + selectedMemberName + ": question set :" + button.getText();
+                            parent.getPw().println(porukaZaSlanje);
+                }
+            }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "You didn't chose question set");
+        }
+    }//GEN-LAST:event_jButton_sendQuestionSetActionPerformed
 
     /**
      * @param args the command line arguments
@@ -331,6 +382,7 @@ public class AdminGUI extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbPresentMembers;
     private javax.swing.JButton jButton_addUser;
     private javax.swing.JButton jButton_removeUser;
+    private javax.swing.JButton jButton_sendQuestionSet;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;

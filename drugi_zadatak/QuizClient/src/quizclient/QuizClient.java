@@ -58,6 +58,10 @@ public class QuizClient extends javax.swing.JFrame {
     public BufferedReader getBr() {
         return br;
     }
+
+    public PrintWriter getPw() {
+        return pw;
+    }
     
     public String get_jCheckBox_Pressed_contestant()
     {
