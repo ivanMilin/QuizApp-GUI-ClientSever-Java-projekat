@@ -50,14 +50,14 @@ public class RecieveMessageFromServer implements Runnable{
                     {
                         String[] userDataParts = user.split(":");
                         
-                        if (userDataParts.length == 4) 
+                        if (userDataParts.length == 3) 
                         {
-                            int points = Integer.parseInt(userDataParts[3].trim());
+                            //int points = Integer.parseInt(userDataParts[3].trim());
                             
                             QuizMemberClient client = new QuizMemberClient(userDataParts[0].trim(), // Username
                                                                            userDataParts[1].trim(), // Password
-                                                                           userDataParts[2].trim(), // Role
-                                                                           points); // Points
+                                                                           userDataParts[2].trim()); // Role
+                                                                           //points); // Points
                             loadedClientsFromFile.add(client);
                         } 
                         else 

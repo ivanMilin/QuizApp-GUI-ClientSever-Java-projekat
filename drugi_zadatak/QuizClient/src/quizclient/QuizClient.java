@@ -92,6 +92,11 @@ public class QuizClient extends javax.swing.JFrame {
     public JTextField getjTextField_username() {
         return jTextField_username;
     }
+
+    public String getUsernameFromTextField() {
+        return usernameFromTextField;
+    }
+    
     
     /**
      * This method is called from within the constructor to initialize the form.

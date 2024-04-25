@@ -15,11 +15,11 @@ public class QuizMemberClient {
     private String role;
     private int points;
 
-    public QuizMemberClient(String username, String password, String role, int points) {
+    public QuizMemberClient(String username, String password, String role) {
         this.username = username;
         this.password = password;
         this.role = role;
-        this.points = points;
+        this.points = 0;
     }
 
     public String getUserName() {

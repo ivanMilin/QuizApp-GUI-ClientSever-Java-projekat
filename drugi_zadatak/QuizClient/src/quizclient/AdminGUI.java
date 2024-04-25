@@ -239,7 +239,7 @@ public class AdminGUI extends javax.swing.JFrame {
                     String username = jTextField_username.getText();
                     String password = jTextField_password.getText();
 
-                    QuizMemberClient member = new QuizMemberClient(username, password, role, points);
+                    QuizMemberClient member = new QuizMemberClient(username, password, role);
 
                     activeMembers.add(member);
                     cbPresentMembers.addItem(username);
@@ -255,7 +255,7 @@ public class AdminGUI extends javax.swing.JFrame {
                     for(QuizMemberClient printmember : activeMembers)
                     {
                         System.out.println(printmember);
-                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole() + ":" + printmember.getPoints();
+                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole();
                     }
                     parent.getPw().println(porukaZaSlanje);
                     
@@ -268,7 +268,7 @@ public class AdminGUI extends javax.swing.JFrame {
                     String username = jTextField_username.getText();
                     String password = jTextField_password.getText();
 
-                    QuizMemberClient member = new QuizMemberClient(username, password, role, points);
+                    QuizMemberClient member = new QuizMemberClient(username, password, role);
 
                     activeMembers.add(member);
                     cbPresentMembers.addItem(username);
@@ -284,7 +284,7 @@ public class AdminGUI extends javax.swing.JFrame {
                     for(QuizMemberClient printmember : activeMembers)
                     {
                         System.out.println(printmember);
-                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole() + ":" + printmember.getPoints();
+                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole();
                     }
                     parent.getPw().println(porukaZaSlanje);
                     System.out.println("");
@@ -301,9 +301,14 @@ public class AdminGUI extends javax.swing.JFrame {
         Iterator<QuizMemberClient> it = this.activeMembers.iterator();
         while(it.hasNext())
         {
-            if(it.next().getUserName().equals(jTextField_username.getText()))
+            if(it.next().getUserName().equals(jTextField_username.getText()) && !parent.getUsernameFromTextField().equals(jTextField_username.getText()))
             {
                 it.remove();
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "You can't remove yourself!");
+                break;
             }
         }
         cbPresentMembers.removeAllItems();
@@ -312,7 +317,7 @@ public class AdminGUI extends javax.swing.JFrame {
         for(QuizMemberClient member : activeMembers)
         {
             System.out.println(member);
-            porukaZaSlanje +=  " " + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole() + ":" + member.getPoints();
+            porukaZaSlanje +=  " " + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole();
         }
         parent.getPw().println(porukaZaSlanje);
         
@@ -330,16 +335,23 @@ public class AdminGUI extends javax.swing.JFrame {
         if(selectedModel != null)
         {
             Enumeration<AbstractButton> buttons = buttonGroup1.getElements();
-            while(buttons.hasMoreElements())
-            {
-                AbstractButton button = buttons.nextElement();
-                if(button.isSelected())
+            if(!cbPresentMembers.getSelectedItem().equals(parent.getUsernameFromTextField()))
+            {    
+                while(buttons.hasMoreElements())
                 {
-                            String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
-                            System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
-                            String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
-                            parent.getPw().println(porukaZaSlanje);
+                    AbstractButton button = buttons.nextElement();
+                    if(button.isSelected())
+                    {
+                                String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
+                                System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
+                                String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
+                                parent.getPw().println(porukaZaSlanje);
+                    }
                 }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "You can't send questionset to yourself!");
             }
         }
         else
