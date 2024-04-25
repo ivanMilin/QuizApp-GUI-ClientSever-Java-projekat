@@ -1,3 +1,0 @@
-admin:admin:admin:0
-ivan:milin:contestant:0
-marko:marko:admin:0
