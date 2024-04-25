@@ -248,13 +248,17 @@ public class AdminGUI extends javax.swing.JFrame {
                     cbPresentMembers.removeAllItems();
                     
                     for (QuizMemberClient cb_member : activeMembers) {
-                        cbPresentMembers.addItem(cb_member.getUserName()); // Assuming getName() returns member's name
+                        cbPresentMembers.addItem(cb_member.getUserName());
                     }
                     
+                    String porukaZaSlanje = "UsersAfterAdding =";
                     for(QuizMemberClient printmember : activeMembers)
                     {
                         System.out.println(printmember);
+                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole() + ":" + printmember.getPoints();
                     }
+                    parent.getPw().println(porukaZaSlanje);
+                    
                     System.out.println("");
                 }
                 else if(jCheckBox_contestant.isSelected())
@@ -276,10 +280,13 @@ public class AdminGUI extends javax.swing.JFrame {
                         cbPresentMembers.addItem(cb_member.getUserName()); // Assuming getName() returns member's name
                     }
                     
+                    String porukaZaSlanje = "UsersAfterAdding =";
                     for(QuizMemberClient printmember : activeMembers)
                     {
                         System.out.println(printmember);
+                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole() + ":" + printmember.getPoints();
                     }
+                    parent.getPw().println(porukaZaSlanje);
                     System.out.println("");
                 }
             }
@@ -301,10 +308,13 @@ public class AdminGUI extends javax.swing.JFrame {
         }
         cbPresentMembers.removeAllItems();
         System.out.println("AdminGUI :");
+        String porukaZaSlanje = "UsersAfterRemove =";
         for(QuizMemberClient member : activeMembers)
         {
             System.out.println(member);
+            porukaZaSlanje +=  " " + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole() + ":" + member.getPoints();
         }
+        parent.getPw().println(porukaZaSlanje);
         
         for(QuizMemberClient member : activeMembers)
         {
@@ -315,7 +325,6 @@ public class AdminGUI extends javax.swing.JFrame {
     private void jButton_sendQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendQuestionSetActionPerformed
         // TODO add your handling code here:
         
-
         ButtonModel selectedModel = buttonGroup1.getSelection();
         
         if(selectedModel != null)
@@ -327,8 +336,8 @@ public class AdminGUI extends javax.swing.JFrame {
                 if(button.isSelected())
                 {
                             String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
-                            System.out.println("SendQuestionSetTo :" + selectedMemberName + ": question set :" + button.getText());
-                            String porukaZaSlanje = "SendQuestionSetTo :" + selectedMemberName + ": question set :" + button.getText();
+                            System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
+                            String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
                             parent.getPw().println(porukaZaSlanje);
                 }
             }

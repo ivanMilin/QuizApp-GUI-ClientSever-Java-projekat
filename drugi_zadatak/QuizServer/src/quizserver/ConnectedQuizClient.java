@@ -5,7 +5,9 @@
 package quizserver;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -108,97 +110,66 @@ public class ConnectedQuizClient implements Runnable{
         
         while(true)
         {
+            String line;
+            
             try
             {
-                if(this.userName.equals(""))
+                line = this.br.readLine();
+                
+                if(line.startsWith("New user ="))
                 {
-                    this.userName = this.br.readLine();
-                    if(this.userName != null)
-                    {
-                        System.out.println("Connected :" + this.userName);
-                        connectedClientsUpdateStatus();
-                    }
-                    else
-                    {
-                        System.out.println("Disconnected user: " + this.userName);
-                        for(ConnectedQuizClient cl : this.allClients)
-                        {
-                            if(cl.getUserName().equals(this.userName))
-                            {
-                                this.allClients.remove(cl);
-                                break;
-                            }
-                            connectedClientsUpdateStatus();
-                            break;
-                        }
-                    }
+                    String[] newUser = line.split("=");
+                    System.out.println("New user = " + newUser[1].trim());
                 }
-                else
+                else if(line.startsWith("SendQuestionSetTo ="))
                 {
-                    System.out.println("Cekam poruku");
-                    String line = this.br.readLine();
-                    System.out.println(line);
-                    System.out.println("Stigla poruka");
-                    
-                    if(line != null)
-                    {
-                        String[] informacija = line.split(": ");
-                        String primacKorisnik = informacija[0].trim();
-                        System.out.println(primacKorisnik);
-                        String poruka = informacija[1];
-                        System.out.println(poruka);
-                        
-                        for(ConnectedQuizClient clnt : this.allClients)
-                        {
-                            if(clnt.getUserName().equals(primacKorisnik))
-                            {
-                                System.out.println(clnt.getUserName());
-                                clnt.pw.println(this.userName + ": " + poruka);
-                                System.out.println(primacKorisnik + ": " + poruka);
-                            }
-                            else
-                            {
-                                if(primacKorisnik.equals(""))
-                                {
-                                    this.pw.println("Korisnik " + primacKorisnik + " je odsutan!");
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        System.out.println("Disconnected user: " + this.userName);
-                        
-                        Iterator<ConnectedQuizClient> it = this.allClients.iterator();
-                        
-                        while(it.hasNext())
-                        {
-                            if(it.next().getUserName().equals(this.userName))
-                            {
-                                it.remove();
-                            }
-                        }
-                        connectedClientsUpdateStatus();
-                        
-                        this.socket.close();
-                        break;
-                    }
-                } 
+                    String[] questionSetRequest = line.split("=");
+                    System.out.println("SendQuestionSetTo =" + questionSetRequest[1].trim());
+                }
+                else if(line.startsWith("UsersAfterRemove ="))
+                {
+                    String[] usersAfterRemove = line.split("=");
+                    removeFile_createFile((usersAfterRemove[1].trim()).split(" "));
+                    System.out.println("UsersAfterRemove =" + usersAfterRemove[1].trim());
+                }
+                else if(line.startsWith("UsersAfterAdding ="))
+                {
+                    String[] usersAfterAdding = line.split("=");
+                    removeFile_createFile((usersAfterAdding[1].trim()).split(" "));
+                    System.out.println("UsersAfterAdding =" + usersAfterAdding[1].trim());
+                }
             }
             catch(IOException ex)
             {
-                System.out.println("Disconnected user: " + this.userName);
-                
-                for(ConnectedQuizClient cl : this.allClients)
-                {
-                    if(cl.getUserName().equals(this.userName))
-                    {
-                        this.allClients.remove(cl);
-                        connectedClientsUpdateStatus();
-                        return;
-                    }
-                }
+                //System.out.println("Disconnected user: " + this.userName);
             }
+        }
+    }
+    
+    // Ova metoda se poziva kad admin hoce da doda ili obrise korisnika iz fajla
+    public static void removeFile_createFile(String[] usersAfterRemove)
+    {
+        File existingFile = new File("users.txt");
+        
+        if(existingFile.exists())
+        {
+            existingFile.delete();
+        }
+        
+        File newFile = new File("users.txt");
+        try(FileWriter writer = new FileWriter(newFile))
+        {
+            for(String line : usersAfterRemove)
+            {
+                writer.write(line);
+                writer.write(System.lineSeparator());
+            }
+            System.out.println("Podaci upisani u fajl " + newFile);
+        }
+        catch(IOException ex)
+        {
+            System.out.println("An error occurred while creating file users.txt");
+            ex.printStackTrace();
         }
     }
 }

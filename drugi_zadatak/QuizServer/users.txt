@@ -1,0 +1,4 @@
+admin:admin:admin:0
+marko:marko:admin:0
+ivan:milin:contestant:0
+jovan:jovan:contestant:0

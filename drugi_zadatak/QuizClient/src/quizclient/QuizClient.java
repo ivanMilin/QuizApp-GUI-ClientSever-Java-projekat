@@ -27,6 +27,7 @@ public class QuizClient extends javax.swing.JFrame {
     private BufferedReader br;
     private PrintWriter pw;
     private RecieveMessageFromServer rmfs;
+    private String usernameFromTextField;
     
     AdminGUI adminGUI;
     ContestantGUI contestantGUI;
@@ -235,11 +236,13 @@ public class QuizClient extends javax.swing.JFrame {
                 {
                     if(client.getRole().equals(this.get_jCheckBox_Pressed_admin()))
                     {
+                        usernameFromTextField = jTextField_username.getText();
                         adminFound = true;
                         break;
                     }
                     else if(client.getRole().equals(this.get_jCheckBox_Pressed_contestant()))
                     {
+                        usernameFromTextField = jTextField_username.getText();
                         contestantFound = true;
                         break;
                     }
@@ -254,6 +257,13 @@ public class QuizClient extends javax.swing.JFrame {
             if(adminFound)
             {
                 adminGUI = new AdminGUI(this);
+                
+                /*
+                    SALJEMO PORUKU KA SERVERU SA SADRZAJEM USERNAME-A
+                */
+                String porukaZaSlanje = "New user =" + jTextField_username.getText();
+                this.pw.println(porukaZaSlanje);
+                
                 adminGUI.show();
                 dispose();
             }
@@ -261,7 +271,14 @@ public class QuizClient extends javax.swing.JFrame {
             if(contestantFound)
             {
                 contestantGUI = new ContestantGUI(this);
-                contestantGUI.show();
+                
+                /*
+                    SALJEMO PORUKU KA SERVERU SA SADRZAJEM USERNAME-A
+                */
+                String porukaZaSlanje = "New user :" + jTextField_username.getText();
+                this.pw.println(porukaZaSlanje);
+                
+                contestantGUI.show();                                
                 dispose();
             }
             
