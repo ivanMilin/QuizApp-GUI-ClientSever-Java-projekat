@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  *
@@ -29,6 +28,11 @@ public class ConnectedQuizClient implements Runnable{
     private BufferedReader br;
     private PrintWriter pw;
     private ArrayList<ConnectedQuizClient> allClients;
+
+    private ArrayList<String> questionSet1;
+    private ArrayList<String> questionSet2;
+    private ArrayList<String> questionSet3;
+    private ArrayList<String> questionSet4;
     
     public String getUserName()
     {
@@ -45,12 +49,20 @@ public class ConnectedQuizClient implements Runnable{
         this.socket = socket;
         this.allClients = allClients;
         
+        questionSet1 = new ArrayList<>();
+        questionSet2 = new ArrayList<>();
+        questionSet3 = new ArrayList<>();
+        questionSet4 = new ArrayList<>();
+        
+        loadQuestionAndAnswersFromFile(questionSet1, "./set1.txt");
+        loadQuestionAndAnswersFromFile(questionSet2, "./set2.txt");
+        loadQuestionAndAnswersFromFile(questionSet3, "./set3.txt");
+        loadQuestionAndAnswersFromFile(questionSet4, "./set4.txt");
+       
         try
         {
             this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), "UTF-8"));
             this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()), true);
-            
-            this.userName = "";
         }
         catch(IOException ex)
         {
@@ -107,7 +119,6 @@ public class ConnectedQuizClient implements Runnable{
     @Override
     public void run()
     {
-        
         while(true)
         {
             String line;
@@ -172,4 +183,54 @@ public class ConnectedQuizClient implements Runnable{
             ex.printStackTrace();
         }
     }
+     
+    public static void loadQuestionAndAnswersFromFile(ArrayList<String> set, String filePath) 
+    {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) 
+        {
+            String questionAndAnswers = "";
+
+            String line;
+            while ((line = br.readLine()) != null) 
+            {
+                if ((line.trim()).matches("^\\d+\\..*")) 
+                {
+                    if (!questionAndAnswers.isEmpty()) {
+                        set.add(questionAndAnswers); 
+                        questionAndAnswers = "";
+                    }
+                    questionAndAnswers += line.trim();
+                } 
+                else if ((line.trim()).matches("^[ \t]*[a-c]\\)\\s+.*")) 
+                {
+                    String answerText = line.substring(line.indexOf(")") + 1).trim();
+                    questionAndAnswers += answerText + ",false" + "|";
+                }
+                else if ((line.trim()).matches("^[ \t]*d\\)\\s+.*")) 
+                {
+                    String answerText = line.substring(line.indexOf(")") + 1).trim();
+                    questionAndAnswers += answerText + ",true" + "|";
+                }
+            }
+
+            if (!questionAndAnswers.isEmpty()) 
+            {
+                set.add(questionAndAnswers);
+            }
+
+            System.out.println("Loaded questions from file:");
+            for (String item : set) 
+            {
+                System.out.println(item);
+            }
+            System.out.println("=============================");
+        } 
+        catch (IOException ex) 
+        {
+            ex.printStackTrace();
+            System.out.println("Problem pri radu metode 'loadQuestionAndAnswersFromFile'");
+        }
+    }
+
+
 }

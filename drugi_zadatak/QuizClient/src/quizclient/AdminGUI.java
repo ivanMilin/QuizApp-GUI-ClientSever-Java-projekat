@@ -231,6 +231,8 @@ public class AdminGUI extends javax.swing.JFrame {
     private void jButton_addUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_addUserActionPerformed
         // TODO add your handling code here:
         if(jCheckBox_admin.isSelected() || jCheckBox_contestant.isSelected())
+        {
+            if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
             {
                 if(jCheckBox_admin.isSelected())
                 {
@@ -243,14 +245,14 @@ public class AdminGUI extends javax.swing.JFrame {
 
                     activeMembers.add(member);
                     cbPresentMembers.addItem(username);
-                    
+
                     System.out.println("AdminGUI :");
                     cbPresentMembers.removeAllItems();
-                    
+
                     for (QuizMemberClient cb_member : activeMembers) {
                         cbPresentMembers.addItem(cb_member.getUserName());
                     }
-                    
+
                     String porukaZaSlanje = "UsersAfterAdding =";
                     for(QuizMemberClient printmember : activeMembers)
                     {
@@ -258,7 +260,7 @@ public class AdminGUI extends javax.swing.JFrame {
                         porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole();
                     }
                     parent.getPw().println(porukaZaSlanje);
-                    
+
                     System.out.println("");
                 }
                 else if(jCheckBox_contestant.isSelected())
@@ -272,14 +274,14 @@ public class AdminGUI extends javax.swing.JFrame {
 
                     activeMembers.add(member);
                     cbPresentMembers.addItem(username);
-                
+
                     System.out.println("AdminGUI :");
                     cbPresentMembers.removeAllItems();
-                    
+
                     for (QuizMemberClient cb_member : activeMembers) {
                         cbPresentMembers.addItem(cb_member.getUserName()); // Assuming getName() returns member's name
                     }
-                    
+
                     String porukaZaSlanje = "UsersAfterAdding =";
                     for(QuizMemberClient printmember : activeMembers)
                     {
@@ -292,8 +294,13 @@ public class AdminGUI extends javax.swing.JFrame {
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "You forgot to choose role");
+                JOptionPane.showMessageDialog(null, "You can't add same username!");
             }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "You forgot to choose role");
+        }
     }//GEN-LAST:event_jButton_addUserActionPerformed
 
     private void jButton_removeUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_removeUserActionPerformed
@@ -301,9 +308,12 @@ public class AdminGUI extends javax.swing.JFrame {
         Iterator<QuizMemberClient> it = this.activeMembers.iterator();
         while(it.hasNext())
         {
-            if(it.next().getUserName().equals(jTextField_username.getText()) && !parent.getUsernameFromTextField().equals(jTextField_username.getText()))
+            if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
             {
-                it.remove();
+                if(it.next().getUserName().equals(jTextField_username.getText()))
+                {
+                    it.remove();
+                }
             }
             else
             {
