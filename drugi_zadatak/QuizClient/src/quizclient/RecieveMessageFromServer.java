@@ -66,15 +66,23 @@ public class RecieveMessageFromServer implements Runnable{
                         }
                     }
                     
+                    
                     System.out.println("Trenutno prisutni : ");
                     
                     for(QuizMemberClient member : loadedClientsFromFile)
                     {
                         System.out.println(member);
                     }
+                    
                     //System.out.println(line);
-                     parent.updateActiveQuizMembers(loadedClientsFromFile);
+                    parent.updateActiveQuizMembers(loadedClientsFromFile);
+                     
                 }
+                else if(line.startsWith("RecievingQuestionSet ="))
+                {
+                    System.out.println("Evooo mee");
+                }
+                
             }
             catch(IOException ex)
             {

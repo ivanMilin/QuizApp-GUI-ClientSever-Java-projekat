@@ -241,7 +241,6 @@ public class QuizClient extends javax.swing.JFrame {
                 {
                     if(client.getRole().equals(this.get_jCheckBox_Pressed_admin()))
                     {
-                        usernameFromTextField = jTextField_username.getText();
                         adminFound = true;
                         break;
                     }
@@ -266,6 +265,7 @@ public class QuizClient extends javax.swing.JFrame {
                 /*
                     SALJEMO PORUKU KA SERVERU SA SADRZAJEM USERNAME-A
                 */
+                usernameFromTextField = jTextField_username.getText();
                 String porukaZaSlanje = "New user =" + jTextField_username.getText();
                 this.pw.println(porukaZaSlanje);
                 
@@ -280,7 +280,9 @@ public class QuizClient extends javax.swing.JFrame {
                 /*
                     SALJEMO PORUKU KA SERVERU SA SADRZAJEM USERNAME-A
                 */
-                String porukaZaSlanje = "New user :" + jTextField_username.getText();
+                
+                usernameFromTextField = jTextField_username.getText();
+                String porukaZaSlanje = "New user =" + jTextField_username.getText();
                 this.pw.println(porukaZaSlanje);
                 
                 contestantGUI.show();                                

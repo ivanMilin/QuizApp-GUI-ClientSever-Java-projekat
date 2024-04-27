@@ -5,6 +5,7 @@
 package quizclient;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -14,11 +15,13 @@ import java.io.InputStreamReader;
 public class ContestantGUI extends javax.swing.JFrame {
     
     QuizClient parent;
-    private BufferedReader br;
+    private static BufferedReader br;
     /**
      * Creates new form ContestantGUI
      */
     public ContestantGUI(QuizClient parent) {
+        System.out.println(parent.getUsernameFromTextField());
+        this.parent = parent;
         this.br = parent.getBr();
         initComponents();
     }
@@ -47,7 +50,8 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerD = new javax.swing.JButton();
         jButton_answerC = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox<>();
-        jButton2 = new javax.swing.JButton();
+        jButton_logout = new javax.swing.JButton();
+        jToggleButton_requestQuestionSet = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ContestantGUI");
@@ -61,8 +65,9 @@ public class ContestantGUI extends javax.swing.JFrame {
         jTextArea_questionField.setEditable(false);
         jTextArea_questionField.setBackground(new java.awt.Color(204, 255, 255));
         jTextArea_questionField.setColumns(20);
+        jTextArea_questionField.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jTextArea_questionField.setRows(5);
-        jTextArea_questionField.setText("QUESTION HERE...");
+        jTextArea_questionField.setText("\n\n\nQUESTION HERE...");
         jScrollPane1.setViewportView(jTextArea_questionField);
 
         jButton_friendsHelp.setText("Pomoc prijatelja");
@@ -81,8 +86,20 @@ public class ContestantGUI extends javax.swing.JFrame {
 
         jButton_answerC.setText("c)");
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton2.setText("Odjavi se");
+        jButton_logout.setText("Odjavi se");
+        jButton_logout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_logoutActionPerformed(evt);
+            }
+        });
+
+        jToggleButton_requestQuestionSet.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jToggleButton_requestQuestionSet.setText("Zatrazi pitanje");
+        jToggleButton_requestQuestionSet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton_requestQuestionSetActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -93,10 +110,10 @@ public class ContestantGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton_nextQuestion)
+                        .addGap(88, 88, 88)
+                        .addComponent(jToggleButton_requestQuestionSet)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_showCurrentScore)
-                        .addGap(103, 103, 103)
-                        .addComponent(jButton2))
+                        .addComponent(jButton_showCurrentScore))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton_answerA, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
@@ -113,13 +130,17 @@ public class ContestantGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton_friendsHelp))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(112, 112, 112)
+                                .addComponent(jLabel1)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(47, 47, 47)
+                                .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton_logout)))))
                 .addGap(23, 23, 23))
         );
         layout.setVerticalGroup(
@@ -129,8 +150,8 @@ public class ContestantGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_nextQuestion)
                     .addComponent(jButton_showCurrentScore)
-                    .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                    .addComponent(jToggleButton_requestQuestionSet))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -147,16 +168,31 @@ public class ContestantGUI extends javax.swing.JFrame {
                     .addComponent(jButton_friendsHelp))
                 .addGap(31, 31, 31)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton_logout)
+                        .addGap(18, 18, 18))))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_logoutActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_jButton_logoutActionPerformed
+
+    private void jToggleButton_requestQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton_requestQuestionSetActionPerformed
+        // TODO add your handling code here:
+        //System.out.println("Zatrazi pitanja " + parent.getUsernameFromTextField());        
+    }//GEN-LAST:event_jToggleButton_requestQuestionSetActionPerformed
 
     /**
      * @param args the command line arguments
@@ -197,7 +233,6 @@ public class ContestantGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton_50_50;
     private javax.swing.JButton jButton_answerA;
     private javax.swing.JButton jButton_answerB;
@@ -205,6 +240,7 @@ public class ContestantGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton_answerD;
     private javax.swing.JButton jButton_changeQuestion;
     private javax.swing.JButton jButton_friendsHelp;
+    private javax.swing.JButton jButton_logout;
     private javax.swing.JButton jButton_nextQuestion;
     private javax.swing.JButton jButton_showCurrentScore;
     private javax.swing.JComboBox<String> jComboBox1;
@@ -212,5 +248,6 @@ public class ContestantGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea_questionField;
     private javax.swing.JTextField jTextField_helpMeFriend;
+    private javax.swing.JToggleButton jToggleButton_requestQuestionSet;
     // End of variables declaration//GEN-END:variables
 }
