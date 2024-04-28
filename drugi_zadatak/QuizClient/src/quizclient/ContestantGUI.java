@@ -9,10 +9,12 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -21,10 +23,13 @@ import javax.swing.JOptionPane;
 public class ContestantGUI extends javax.swing.JFrame {
     
     QuizClient parent;
-    private static BufferedReader br;
+    private static PrintWriter pw;
     private ArrayList<QuestionAndFourAnswers> questionAndFourAnswers;
     private ArrayList<String> answersList;
     private ArrayList<String> twoOfFourAnswersFor50_50;
+    private String questionFromFriend;
+    
+    private ArrayList<QuizMemberClient> activeMembers;
     
     String[] answer0;
     String[] answer1;
@@ -40,15 +45,29 @@ public class ContestantGUI extends javax.swing.JFrame {
     public ContestantGUI(QuizClient parent) {
         System.out.println(parent.getUsernameFromTextField());
         this.answersList = new ArrayList<>();
+        this.activeMembers = new ArrayList<>();
         this.twoOfFourAnswersFor50_50 = new ArrayList<>();
         this.parent = parent;
-        this.br = parent.getBr();
+        this.pw = parent.getPw();
         this.numberOfTrueAnsweredQuestions = 0;
         this.questionNumber = 0;
         initComponents();
         
+        this.activeMembers = parent.getActiveMembers();
+        jLabel2.setText(parent.getUsernameFromTextField());
     }
 
+     //jTextField_helpMeFriend
+
+    public JTextField getjTextField_helpMeFriend() {
+        return jTextField_helpMeFriend;
+    }
+
+    public void setjTextField_helpMeFriend(String jTextField_helpMeFriend) {
+        this.jTextField_helpMeFriend.setText(jTextField_helpMeFriend);
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -71,10 +90,12 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerB = new javax.swing.JButton();
         jButton_answerD = new javax.swing.JButton();
         jButton_answerC = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        jCombo_presentMembers = new javax.swing.JComboBox<>();
         jButton_logout = new javax.swing.JButton();
         jButton_requestQuestionSet = new javax.swing.JButton();
         jButton_nextQuestion = new javax.swing.JButton();
+        jButton_answersFriend = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ContestantGUI");
@@ -91,6 +112,11 @@ public class ContestantGUI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTextArea_questionField);
 
         jButton_friendsHelp.setText("Pomoc prijatelja");
+        jButton_friendsHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_friendsHelpActionPerformed(evt);
+            }
+        });
 
         jButton_changeQuestion.setText("Zamena pitanja");
         jButton_changeQuestion.addActionListener(new java.awt.event.ActionListener() {
@@ -159,47 +185,65 @@ public class ContestantGUI extends javax.swing.JFrame {
             }
         });
 
+        jButton_answersFriend.setText("Odgovori");
+        jButton_answersFriend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_answersFriendActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("jLabel2");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton_nextQuestion)
-                        .addGap(85, 85, 85)
-                        .addComponent(jButton_requestQuestionSet)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_showCurrentScore))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_answersFriend))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton_answerA, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                        .addComponent(jButton_answerC, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton_answerB, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_answerD, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton_50_50)
-                        .addGap(134, 134, 134)
-                        .addComponent(jButton_changeQuestion)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_friendsHelp))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(112, 112, 112)
-                                .addComponent(jLabel1)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(47, 47, 47)
-                                .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton_nextQuestion)
+                                .addGap(85, 85, 85)
+                                .addComponent(jButton_requestQuestionSet)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton_logout)))))
+                                .addComponent(jButton_showCurrentScore))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton_answerA, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                                .addComponent(jButton_answerC, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton_answerB, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton_answerD, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton_50_50)
+                                .addGap(134, 134, 134)
+                                .addComponent(jButton_changeQuestion)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton_friendsHelp))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jCombo_presentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(112, 112, 112)
+                                        .addComponent(jLabel1)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(41, 41, 41)
+                                        .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButton_logout)))))))
                 .addGap(23, 23, 23))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(265, 265, 265)
+                .addComponent(jLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,22 +263,26 @@ public class ContestantGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_answerB)
                     .addComponent(jButton_answerD))
-                .addGap(51, 51, 51)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel2)
+                .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_50_50)
                     .addComponent(jButton_changeQuestion)
                     .addComponent(jButton_friendsHelp))
-                .addGap(31, 31, 31)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton_answersFriend)
+                .addGap(2, 2, 2)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jCombo_presentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton_logout)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton_logout)
+                            .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18))))
         );
 
@@ -253,6 +301,9 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerB.setEnabled(true);
         jButton_answerC.setEnabled(true);
         jButton_answerD.setEnabled(true);
+        
+        jButton_50_50.setEnabled(true);
+        jButton_friendsHelp.setEnabled(true);
         
         String[] question_answer = (parent.getQuestionAndAnswers().get(0)).split(";");
         String question  = question_answer[0];
@@ -277,6 +328,13 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerD.setText(answer3[0]);
 
         answersList.clear();
+        
+        jCombo_presentMembers.removeAllItems();
+        
+        for(QuizMemberClient member : activeMembers)
+        {
+            jCombo_presentMembers.addItem(member.getUserName());
+        }
     }//GEN-LAST:event_jButton_requestQuestionSetActionPerformed
 
     private void jButton_nextQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_nextQuestionActionPerformed
@@ -396,7 +454,36 @@ public class ContestantGUI extends javax.swing.JFrame {
         for (int i = 0; i < Math.min(2, falseAnswerIndices.size()); i++) {
             disableButtonForIndex(falseAnswerIndices.get(i));
         }
+        
+        jButton_50_50.setEnabled(false);
     }//GEN-LAST:event_jButton_50_50ActionPerformed
+
+    private void jButton_friendsHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_friendsHelpActionPerformed
+        // TODO add your handling code here:
+        String selectedMemberName = (String) jCombo_presentMembers.getSelectedItem();
+        
+        String porukaZaSlanje = "HelpMeFriend =" + parent.getUsernameFromTextField() +":"+ selectedMemberName +"|"+ jTextArea_questionField.getText();
+             
+        System.out.println(porukaZaSlanje);
+        this.pw.println(porukaZaSlanje);
+        
+        jButton_friendsHelp.setEnabled(false);
+    }//GEN-LAST:event_jButton_friendsHelpActionPerformed
+
+    private void jButton_answersFriendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answersFriendActionPerformed
+        // TODO add your handling code here:
+        String selectedMemberName = (String) jCombo_presentMembers.getSelectedItem();
+        String answerForFriend = "";
+        
+        if(!jTextField_helpMeFriend.getText().equals(""))
+        {
+            answerForFriend = (String)jTextField_helpMeFriend.getText();
+        }
+        
+        String porukaZaSlanje = "AnswerForFriend =" + selectedMemberName +"|"+ parent.getUsernameFromTextField() + ":" + answerForFriend;
+        System.out.println(porukaZaSlanje);
+        this.pw.println(porukaZaSlanje);
+    }//GEN-LAST:event_jButton_answersFriendActionPerformed
 
     private void disableButtonForIndex(int index) 
     {
@@ -481,14 +568,16 @@ public class ContestantGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton_answerB;
     private javax.swing.JButton jButton_answerC;
     private javax.swing.JButton jButton_answerD;
+    private javax.swing.JButton jButton_answersFriend;
     private javax.swing.JButton jButton_changeQuestion;
     private javax.swing.JButton jButton_friendsHelp;
     private javax.swing.JButton jButton_logout;
     private javax.swing.JButton jButton_nextQuestion;
     private javax.swing.JButton jButton_requestQuestionSet;
     private javax.swing.JButton jButton_showCurrentScore;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jCombo_presentMembers;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea_questionField;
     private javax.swing.JTextField jTextField_helpMeFriend;

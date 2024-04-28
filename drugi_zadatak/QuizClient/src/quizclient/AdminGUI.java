@@ -184,8 +184,8 @@ public class AdminGUI extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton_sendQuestionSet, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                .addContainerGap(124, Short.MAX_VALUE))
+                                .addComponent(jButton_sendQuestionSet, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)))))
+                .addContainerGap(154, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -221,7 +221,7 @@ public class AdminGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_addUser)
                     .addComponent(jButton_removeUser))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
 
         pack();

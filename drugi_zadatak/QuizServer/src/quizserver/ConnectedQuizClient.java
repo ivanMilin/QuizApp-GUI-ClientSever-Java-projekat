@@ -199,6 +199,18 @@ public class ConnectedQuizClient implements Runnable{
                     removeFile_createFile((usersAfterAdding[1].trim()).split(" "));
                     System.out.println("UsersAfterAdding =" + usersAfterAdding[1].trim());
                 }
+                else if(line.startsWith("HelpMeFriend ="))
+                {
+                    //HelpMeFried =ivan:admin|1. Ukoliko za nekoga ka�emo da ima demenciju, on je:
+                    String porukaZaSlanje = line;
+                    broadcastMessage(porukaZaSlanje);
+                }
+                else if(line.startsWith("AnswerForFriend ="))
+                {
+                    //AnswerForFriend =jovan|ivan:zaboravan
+                    String porukaZaSlanje = line;
+                    broadcastMessage(line);
+                }
             }
             catch(IOException ex)
             {

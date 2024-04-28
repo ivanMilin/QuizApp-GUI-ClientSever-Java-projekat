@@ -286,6 +286,7 @@ public class QuizClient extends javax.swing.JFrame {
             if(contestantFound)
             {
                 contestantGUI = new ContestantGUI(this);
+                rmfs.setContestantGUII(contestantGUI);
                 
                 /*
                     SALJEMO PORUKU KA SERVERU SA SADRZAJEM USERNAME-A

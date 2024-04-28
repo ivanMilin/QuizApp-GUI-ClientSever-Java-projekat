@@ -86,12 +86,12 @@
                               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                               <Component id="cbPresentMembers" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton_sendQuestionSet" max="32767" attributes="0"/>
+                              <Component id="jButton_sendQuestionSet" pref="134" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="124" max="32767" attributes="0"/>
+              <EmptySpace pref="154" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -135,7 +135,7 @@
                   <Component id="jButton_addUser" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButton_removeUser" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="45" max="32767" attributes="0"/>
+              <EmptySpace pref="83" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

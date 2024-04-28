@@ -17,14 +17,21 @@ import java.util.logging.Logger;
 public class RecieveMessageFromServer implements Runnable{
     
     QuizClient parent;
+    ContestantGUI contestantGUII;
     BufferedReader br;
     ArrayList<QuizMemberClient> loadedClientsFromFile;
     
     public RecieveMessageFromServer(QuizClient parent)
     {
+        this.contestantGUII = new ContestantGUI(parent); 
         this.parent = parent;
         this.br     = parent.getBr();
         this.loadedClientsFromFile = new ArrayList<>();
+        this.contestantGUII = null;
+    }
+
+    public void setContestantGUII(ContestantGUI contestantGUII) {
+        this.contestantGUII = contestantGUII;
     }
 
     @Override
@@ -98,11 +105,47 @@ public class RecieveMessageFromServer implements Runnable{
                         parent.setQuestionAndAnswers(questionAndAnswers);
 
                         // Print the results
+                        /*
                         System.out.println("username = " + username);
                         System.out.println("questionsAndAnswers:");
                         for (String qa : questionAndAnswers) {
                             System.out.println(qa);
                         }
+                        */
+                    }
+                }
+                else if(line.startsWith("HelpMeFriend ="))
+                {
+                    //HelpMeFried =ivan:admin|1. Ukoliko za nekoga ka�emo da ima demenciju, on je:
+                    String[] string = line.split("=");
+                    String[] fromWho_toWho_questionForFriend = string[1].split(":");
+                    
+                    String fromWho = fromWho_toWho_questionForFriend[0];
+                    String[] toWho_questionForFriend = fromWho_toWho_questionForFriend[1].split("\\|");
+                    String toWho = toWho_questionForFriend[0];
+                    String questionForFriend = toWho_questionForFriend[1];
+                    
+                    if(parent.getUsernameFromTextField().equals(toWho))
+                    {
+                        System.out.println(string[1]);
+                        contestantGUII.setjTextField_helpMeFriend(fromWho + ":" + questionForFriend);
+                    }
+                }
+                else if(line.startsWith("AnswerForFriend ="))
+                {
+                    //AnswerForFriend = jovan|ivan:zaboravan
+                    String[] string = line.split("=");
+                    String[] toWho_fromWho_answer = string[1].split("\\|");
+
+                    String toWho = toWho_fromWho_answer[0];
+                    String[] fromWho_answer = toWho_fromWho_answer[1].split(":");
+                    String fromWho = fromWho_answer[0];
+                    String answer = fromWho_answer[1];
+                    
+                    if(parent.getUsernameFromTextField().equals(toWho))
+                    {
+                        System.out.println(string[1]);
+                        contestantGUII.setjTextField_helpMeFriend(fromWho + ":" + answer);
                     }
                 }
                 
