@@ -66,7 +66,7 @@ public class RecieveMessageFromServer implements Runnable{
                         }
                     }
                     
-                    
+                    int a = 5;
                     System.out.println("Trenutno prisutni : ");
                     
                     for(QuizMemberClient member : loadedClientsFromFile)
@@ -80,7 +80,30 @@ public class RecieveMessageFromServer implements Runnable{
                 }
                 else if(line.startsWith("RecievingQuestionSet ="))
                 {
-                    System.out.println("Evooo mee");
+                    String[] beforeUsername_username_QuestionsAndAnswers = (line.split("="));
+                    String username_QuestionsAndAnswers = beforeUsername_username_QuestionsAndAnswers[1];
+                    String[] parts = username_QuestionsAndAnswers.split("%");
+                    String username = parts[0];
+                    
+                    if(username.equals(parent.getUsernameFromTextField()))
+                    {
+                        String[] qa_parts  = parts[1].split("#");
+                        ArrayList<String> questionAndAnswers = new ArrayList<>();
+
+                        for(String qa : qa_parts)
+                        {
+                            questionAndAnswers.add(qa);
+                        }
+                        
+                        parent.setQuestionAndAnswers(questionAndAnswers);
+
+                        // Print the results
+                        System.out.println("username = " + username);
+                        System.out.println("questionsAndAnswers:");
+                        for (String qa : questionAndAnswers) {
+                            System.out.println(qa);
+                        }
+                    }
                 }
                 
             }

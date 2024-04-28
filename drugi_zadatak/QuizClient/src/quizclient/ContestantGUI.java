@@ -4,9 +4,15 @@
  */
 package quizclient;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,14 +22,31 @@ public class ContestantGUI extends javax.swing.JFrame {
     
     QuizClient parent;
     private static BufferedReader br;
+    private ArrayList<QuestionAndFourAnswers> questionAndFourAnswers;
+    private ArrayList<String> answersList;
+    private ArrayList<String> twoOfFourAnswersFor50_50;
+    
+    String[] answer0;
+    String[] answer1;
+    String[] answer2;
+    String[] answer3;
+    
+    private int numberOfTrueAnsweredQuestions;
+    
+    int questionNumber;
     /**
      * Creates new form ContestantGUI
      */
     public ContestantGUI(QuizClient parent) {
         System.out.println(parent.getUsernameFromTextField());
+        this.answersList = new ArrayList<>();
+        this.twoOfFourAnswersFor50_50 = new ArrayList<>();
         this.parent = parent;
         this.br = parent.getBr();
+        this.numberOfTrueAnsweredQuestions = 0;
+        this.questionNumber = 0;
         initComponents();
+        
     }
 
     /**
@@ -36,7 +59,6 @@ public class ContestantGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jButton_nextQuestion = new javax.swing.JButton();
         jButton_showCurrentScore = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea_questionField = new javax.swing.JTextArea();
@@ -51,13 +73,11 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerC = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton_logout = new javax.swing.JButton();
-        jToggleButton_requestQuestionSet = new javax.swing.JToggleButton();
+        jButton_requestQuestionSet = new javax.swing.JButton();
+        jButton_nextQuestion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ContestantGUI");
-
-        jButton_nextQuestion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton_nextQuestion.setText("Naredno pitanje");
 
         jButton_showCurrentScore.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton_showCurrentScore.setText("Prikazi tabelu");
@@ -65,26 +85,56 @@ public class ContestantGUI extends javax.swing.JFrame {
         jTextArea_questionField.setEditable(false);
         jTextArea_questionField.setBackground(new java.awt.Color(204, 255, 255));
         jTextArea_questionField.setColumns(20);
-        jTextArea_questionField.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jTextArea_questionField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTextArea_questionField.setRows(5);
-        jTextArea_questionField.setText("\n\n\nQUESTION HERE...");
+        jTextArea_questionField.setText("Dobrodošli !");
         jScrollPane1.setViewportView(jTextArea_questionField);
 
         jButton_friendsHelp.setText("Pomoc prijatelja");
 
         jButton_changeQuestion.setText("Zamena pitanja");
+        jButton_changeQuestion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_changeQuestionActionPerformed(evt);
+            }
+        });
 
         jButton_50_50.setText("50 / 50");
+        jButton_50_50.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_50_50ActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Posalji poruku za pomoc prijatelja :");
 
         jButton_answerA.setText("a)");
+        jButton_answerA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_answerAActionPerformed(evt);
+            }
+        });
 
         jButton_answerB.setText("b)");
+        jButton_answerB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_answerBActionPerformed(evt);
+            }
+        });
 
         jButton_answerD.setText("d)");
+        jButton_answerD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_answerDActionPerformed(evt);
+            }
+        });
 
         jButton_answerC.setText("c)");
+        jButton_answerC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_answerCActionPerformed(evt);
+            }
+        });
 
         jButton_logout.setText("Odjavi se");
         jButton_logout.addActionListener(new java.awt.event.ActionListener() {
@@ -93,11 +143,19 @@ public class ContestantGUI extends javax.swing.JFrame {
             }
         });
 
-        jToggleButton_requestQuestionSet.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jToggleButton_requestQuestionSet.setText("Zatrazi pitanje");
-        jToggleButton_requestQuestionSet.addActionListener(new java.awt.event.ActionListener() {
+        jButton_requestQuestionSet.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButton_requestQuestionSet.setText("Zatrazi pitanje");
+        jButton_requestQuestionSet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton_requestQuestionSetActionPerformed(evt);
+                jButton_requestQuestionSetActionPerformed(evt);
+            }
+        });
+
+        jButton_nextQuestion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButton_nextQuestion.setText("Naredno pitanje");
+        jButton_nextQuestion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_nextQuestionActionPerformed(evt);
             }
         });
 
@@ -110,8 +168,8 @@ public class ContestantGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton_nextQuestion)
-                        .addGap(88, 88, 88)
-                        .addComponent(jToggleButton_requestQuestionSet)
+                        .addGap(85, 85, 85)
+                        .addComponent(jButton_requestQuestionSet)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton_showCurrentScore))
                     .addGroup(layout.createSequentialGroup()
@@ -148,9 +206,9 @@ public class ContestantGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_nextQuestion)
                     .addComponent(jButton_showCurrentScore)
-                    .addComponent(jToggleButton_requestQuestionSet))
+                    .addComponent(jButton_requestQuestionSet)
+                    .addComponent(jButton_nextQuestion))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -189,11 +247,196 @@ public class ContestantGUI extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jButton_logoutActionPerformed
 
-    private void jToggleButton_requestQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton_requestQuestionSetActionPerformed
+    private void jButton_requestQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_requestQuestionSetActionPerformed
         // TODO add your handling code here:
-        //System.out.println("Zatrazi pitanja " + parent.getUsernameFromTextField());        
-    }//GEN-LAST:event_jToggleButton_requestQuestionSetActionPerformed
+        jButton_answerA.setEnabled(true);
+        jButton_answerB.setEnabled(true);
+        jButton_answerC.setEnabled(true);
+        jButton_answerD.setEnabled(true);
+        
+        String[] question_answer = (parent.getQuestionAndAnswers().get(0)).split(";");
+        String question  = question_answer[0];
+        String[] answers = question_answer[1].split("\\|");
 
+        for(int i = 0; i<4; i++)
+        {
+            answersList.add(answers[i]);
+        }
+
+        Collections.shuffle(this.answersList);
+        
+        answer0 = answersList.get(0).split(",");
+        answer1 = answersList.get(1).split(",");
+        answer2 = answersList.get(2).split(",");
+        answer3 = answersList.get(3).split(",");
+
+        jTextArea_questionField.setText(question);
+        jButton_answerA.setText(answer0[0]);
+        jButton_answerB.setText(answer1[0]);
+        jButton_answerC.setText(answer2[0]);
+        jButton_answerD.setText(answer3[0]);
+
+        answersList.clear();
+    }//GEN-LAST:event_jButton_requestQuestionSetActionPerformed
+
+    private void jButton_nextQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_nextQuestionActionPerformed
+        // TODO add your handling code here:
+        jButton_answerA.setEnabled(true);
+        jButton_answerB.setEnabled(true);
+        jButton_answerC.setEnabled(true);
+        jButton_answerD.setEnabled(true);
+        
+        questionNumber ++;
+        String[] question_answer = (parent.getQuestionAndAnswers().get(questionNumber)).split(";");
+        String question  = question_answer[0];
+        String[] answers = question_answer[1].split("\\|");
+
+        for(int i = 0; i<4; i++)
+        {
+            answersList.add(answers[i]);
+        }
+        
+        Collections.shuffle(this.answersList);
+            
+        answer0 = answersList.get(0).split(",");
+        answer1 = answersList.get(1).split(",");
+        answer2 = answersList.get(2).split(",");
+        answer3 = answersList.get(3).split(",");
+
+        jTextArea_questionField.setText(question);
+        jButton_answerA.setText(answer0[0]);
+        jButton_answerB.setText(answer1[0]);
+        jButton_answerC.setText(answer2[0]);
+        jButton_answerD.setText(answer3[0]);
+
+        answersList.clear();
+        
+        if(questionNumber == 9)
+            jButton_nextQuestion.setEnabled(false);    
+    }//GEN-LAST:event_jButton_nextQuestionActionPerformed
+ 
+    private void jButton_changeQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_changeQuestionActionPerformed
+        // TODO add your handling code here:
+        jButton_answerA.setEnabled(true);
+        jButton_answerB.setEnabled(true);
+        jButton_answerC.setEnabled(true);
+        jButton_answerD.setEnabled(true);
+        
+        String[] question_answer = (parent.getQuestionAndAnswers().get(10)).split(";");
+        String question  = question_answer[0];
+        String[] answers = question_answer[1].split("\\|");
+
+        for(int i = 0; i<4; i++)
+        {
+            answersList.add(answers[i]);
+        }
+        
+        Collections.shuffle(this.answersList);
+            
+        answer0 = answersList.get(0).split(",");
+        answer1 = answersList.get(1).split(",");
+        answer2 = answersList.get(2).split(",");
+        answer3 = answersList.get(3).split(",");
+
+        jTextArea_questionField.setText(question);
+        jButton_answerA.setText(answer0[0]);
+        jButton_answerB.setText(answer1[0]);
+        jButton_answerC.setText(answer2[0]);
+        jButton_answerD.setText(answer3[0]);
+        
+        answersList.clear();
+        jButton_changeQuestion.setEnabled(false);
+    }//GEN-LAST:event_jButton_changeQuestionActionPerformed
+
+    private void jButton_answerAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerAActionPerformed
+        // TODO add your handling code here:
+        numberOfTrueAnsweredQuestions  =handleAnswer(answer0[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+    }//GEN-LAST:event_jButton_answerAActionPerformed
+
+    private void jButton_answerBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerBActionPerformed
+        // TODO add your handling code here:
+        numberOfTrueAnsweredQuestions = handleAnswer(answer1[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+    }//GEN-LAST:event_jButton_answerBActionPerformed
+
+    private void jButton_answerCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerCActionPerformed
+        // TODO add your handling code here:
+        numberOfTrueAnsweredQuestions = handleAnswer(answer2[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+    }//GEN-LAST:event_jButton_answerCActionPerformed
+
+    private void jButton_answerDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerDActionPerformed
+        // TODO add your handling code here:
+        numberOfTrueAnsweredQuestions  = handleAnswer(answer3[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+    }//GEN-LAST:event_jButton_answerDActionPerformed
+
+    private void jButton_50_50ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_50_50ActionPerformed
+        // TODO add your handling code here:
+        // Get the answers associated with the current question
+        String[] currentAnswers = parent.getQuestionAndAnswers().get(questionNumber).split(";")[1].split("\\|");
+
+        // Track the indices of the correct and false answers
+        int correctAnswerIndex = -1;
+        ArrayList<Integer> falseAnswerIndices = new ArrayList<>();
+
+        // Loop through the answers to find the false ones and the correct one
+        for (int i = 0; i < currentAnswers.length; i++) {
+            String[] answerParts = currentAnswers[i].split(",");
+            if (Boolean.parseBoolean(answerParts[1])) {
+                // Store the index of the correct answer
+                correctAnswerIndex = i;
+            } else {
+                // Store the indices of false answers
+                falseAnswerIndices.add(i);
+            }
+        }
+
+        // Shuffle the indices of the false answers
+        Collections.shuffle(falseAnswerIndices);
+
+        // Disable two out of three false answers
+        for (int i = 0; i < Math.min(2, falseAnswerIndices.size()); i++) {
+            disableButtonForIndex(falseAnswerIndices.get(i));
+        }
+    }//GEN-LAST:event_jButton_50_50ActionPerformed
+
+    private void disableButtonForIndex(int index) 
+    {
+        switch (index) {
+            case 0:
+                jButton_answerA.setEnabled(false);
+                break;
+            case 1:
+                jButton_answerB.setEnabled(false);
+                break;
+            case 2:
+                jButton_answerC.setEnabled(false);
+                break;
+            case 3:
+                jButton_answerD.setEnabled(false);
+                break;
+            default:
+                break;
+        }
+}
+    
+    private static int handleAnswer(String answer, int numberOfTrueAnsweredQuestions, JButton buttonA, JButton buttonB, JButton buttonC, JButton buttonD) 
+    {
+        if (answer.equals("true")) 
+        {
+            numberOfTrueAnsweredQuestions++;
+            JOptionPane.showMessageDialog(null, "Correct Answer!\n" + numberOfTrueAnsweredQuestions + "/10");
+        } 
+        else 
+        {
+            JOptionPane.showMessageDialog(null, "Wrong Answer!\n" + numberOfTrueAnsweredQuestions + "/10");
+        }
+        buttonA.setEnabled(false);
+        buttonB.setEnabled(false);
+        buttonC.setEnabled(false);
+        buttonD.setEnabled(false);
+        
+        return numberOfTrueAnsweredQuestions;
+    }
+        
     /**
      * @param args the command line arguments
      */
@@ -242,12 +485,12 @@ public class ContestantGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton_friendsHelp;
     private javax.swing.JButton jButton_logout;
     private javax.swing.JButton jButton_nextQuestion;
+    private javax.swing.JButton jButton_requestQuestionSet;
     private javax.swing.JButton jButton_showCurrentScore;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea_questionField;
     private javax.swing.JTextField jTextField_helpMeFriend;
-    private javax.swing.JToggleButton jToggleButton_requestQuestionSet;
     // End of variables declaration//GEN-END:variables
 }

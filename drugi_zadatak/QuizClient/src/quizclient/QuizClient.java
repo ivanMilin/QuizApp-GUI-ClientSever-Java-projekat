@@ -32,12 +32,15 @@ public class QuizClient extends javax.swing.JFrame {
     AdminGUI adminGUI;
     ContestantGUI contestantGUI;
     ArrayList<QuizMemberClient> activeMembers;
+    
+    ArrayList<String> questionAndAnswers;
    
     /**
      * Creates new form QuizClient
      */
     public QuizClient() {
-        this.activeMembers = new ArrayList<>(); 
+        this.activeMembers = new ArrayList<>();
+        this.questionAndAnswers = new ArrayList<>();
         initComponents(); 
         
         try
@@ -96,7 +99,14 @@ public class QuizClient extends javax.swing.JFrame {
     public String getUsernameFromTextField() {
         return usernameFromTextField;
     }
-    
+
+    public void setQuestionAndAnswers(ArrayList<String> questionAndAnswers) {
+        this.questionAndAnswers = questionAndAnswers;
+    }
+
+    public ArrayList<String> getQuestionAndAnswers() {
+        return questionAndAnswers;
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.

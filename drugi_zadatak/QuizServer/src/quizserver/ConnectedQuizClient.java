@@ -63,6 +63,7 @@ public class ConnectedQuizClient implements Runnable{
         {
             this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), "UTF-8"));
             this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()), true);
+            this.userName = "";
         }
         catch(IOException ex)
         {
@@ -96,8 +97,7 @@ public class ConnectedQuizClient implements Runnable{
 
         String porukaZaSlanje = "Users =" + oneString_dataFrom_userTxt.toString();
         System.out.println("iz fajla " + porukaZaSlanje);
-        this.pw.println(porukaZaSlanje);
-        
+        this.pw.println(porukaZaSlanje);   
     }
     
     void connectedClientsUpdateStatus()
@@ -113,9 +113,21 @@ public class ConnectedQuizClient implements Runnable{
         {
             svimaUpdateCB.pw.println(connectedUsers);
         }
-        System.out.println(connectedUsers); 
+        System.out.println("Korisnici :" + connectedUsers); 
     }
     
+    public void broadcastMessage(String message)
+    {
+        for(ConnectedQuizClient client : allClients)
+        {
+            client.sendMessage(message);
+        }
+    }
+    
+    public void sendMessage(String message)
+    {
+        pw.println(message);
+    }
     @Override
     public void run()
     {
@@ -143,33 +155,36 @@ public class ConnectedQuizClient implements Runnable{
                     // definisi string poruka za slanje;
                     if(questionSet == 1)
                     {
-                        //System.out.println("questionSet == 1");
+                        System.out.println("questionSet == 1");
                         String porukaZaSlanje = "RecievingQuestionSet =" + username_QuestionSet[0] +"%";
-                        concatenate_QuestionsAndAnswersFromSet_inOneString(questionSet1,porukaZaSlanje);
+                        porukaZaSlanje += concatenate_QuestionsAndAnswersFromSet_inOneString(questionSet1);
                         System.out.println(porukaZaSlanje);
-                        this.pw.println(porukaZaSlanje);
+                        broadcastMessage(porukaZaSlanje);
                         
                     }
                     else if(questionSet == 2)
                     {
                         System.out.println("questionSet == 2");
-                        String porukaZaSlanje = "SendingQuestionSet =";
-                        //concatenateQuestionSetInOneString(porukaZaSlanje, questionSet2);
-                        //this.pw.println(porukaZaSlanje);
+                        String porukaZaSlanje = "RecievingQuestionSet =" + username_QuestionSet[0] +"%";
+                        porukaZaSlanje += concatenate_QuestionsAndAnswersFromSet_inOneString(questionSet2);
+                        System.out.println(porukaZaSlanje);
+                        broadcastMessage(porukaZaSlanje);
                     }
                     else if(questionSet == 3)
                     {
                         System.out.println("questionSet == 3");
-                        String porukaZaSlanje = "SendingQuestionSet =";
-                        //concatenateQuestionSetInOneString(porukaZaSlanje, questionSet3);
-                        //this.pw.println(porukaZaSlanje);
+                        String porukaZaSlanje = "RecievingQuestionSet =" + username_QuestionSet[0] +"%";
+                        porukaZaSlanje += concatenate_QuestionsAndAnswersFromSet_inOneString(questionSet3);
+                        System.out.println(porukaZaSlanje);
+                        broadcastMessage(porukaZaSlanje);
                     }
                     else if(questionSet == 4)
                     {
                         System.out.println("questionSet == 4");
-                        String porukaZaSlanje = "SendingQuestionSet =";
-                        //concatenateQuestionSetInOneString(porukaZaSlanje, questionSet4);
-                        //this.pw.println(porukaZaSlanje);
+                        String porukaZaSlanje = "RecievingQuestionSet =" + username_QuestionSet[0] +"%";
+                        porukaZaSlanje += concatenate_QuestionsAndAnswersFromSet_inOneString(questionSet4);
+                        System.out.println(porukaZaSlanje);
+                        broadcastMessage(porukaZaSlanje);
                     }  
                 }
                 else if(line.startsWith("UsersAfterRemove ="))
@@ -269,11 +284,13 @@ public class ConnectedQuizClient implements Runnable{
         }
     }
 
-    public static void concatenate_QuestionsAndAnswersFromSet_inOneString(ArrayList<String> set,String porukaZaSlanje)
+    public static String concatenate_QuestionsAndAnswersFromSet_inOneString(ArrayList<String> set)
     {
+        StringBuilder builder = new StringBuilder();
         for(String s : set)
         {
-            porukaZaSlanje += s;
+            builder.append(s);
         }
+        return builder.toString();
     }
 }
