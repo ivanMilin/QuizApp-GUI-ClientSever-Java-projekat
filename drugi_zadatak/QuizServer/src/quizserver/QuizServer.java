@@ -21,6 +21,7 @@ public class QuizServer {
     private ServerSocket ssocket;
     private int port;
     private ArrayList<ConnectedQuizClient> clients;
+    private ArrayList<String> presentMembers;
     
     public ServerSocket getSsocket()
     {
@@ -42,6 +43,15 @@ public class QuizServer {
         this.port = port;
     }
     
+    public void addPresentUsers(String user)
+    {
+        presentMembers.add(user);
+    }
+
+    public ArrayList<String> getPresentMembers() {
+        return presentMembers;
+    }
+    
     public void acceptClients()
     {
         Socket client = null;
@@ -60,7 +70,7 @@ public class QuizServer {
             
             if(client != null)
             {
-                ConnectedQuizClient clnt = new ConnectedQuizClient(client, clients);
+                ConnectedQuizClient clnt = new ConnectedQuizClient(client, clients,this);
                 clients.add(clnt) ;
                 thr = new Thread(clnt);
                 thr.start();
@@ -75,6 +85,7 @@ public class QuizServer {
     public QuizServer(int port)
     {
         this.clients = new ArrayList<>();
+        this.presentMembers = new ArrayList<>();
         
         try
         {

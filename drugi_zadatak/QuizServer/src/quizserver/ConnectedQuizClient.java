@@ -23,6 +23,7 @@ import java.util.ArrayList;
  */
 public class ConnectedQuizClient implements Runnable{
  
+    QuizServer parent;
     private Socket socket;
     private String userName;
     private BufferedReader br;
@@ -34,6 +35,9 @@ public class ConnectedQuizClient implements Runnable{
     private ArrayList<String> questionSet3;
     private ArrayList<String> questionSet4;
     
+    private ArrayList<QuizMember> quizMembers;
+    private ArrayList<QuizMember> presentMembers;
+    
     public String getUserName()
     {
         return userName;
@@ -44,15 +48,18 @@ public class ConnectedQuizClient implements Runnable{
         this.userName = userName;
     }
     
-    public ConnectedQuizClient(Socket socket, ArrayList<ConnectedQuizClient> allClients)
+    public ConnectedQuizClient(Socket socket, ArrayList<ConnectedQuizClient> allClients, QuizServer parent)
     {
         this.socket = socket;
         this.allClients = allClients;
+        this.parent = parent;
         
         questionSet1 = new ArrayList<>();
         questionSet2 = new ArrayList<>();
         questionSet3 = new ArrayList<>();
         questionSet4 = new ArrayList<>();
+        quizMembers = new ArrayList<>();
+        presentMembers = new ArrayList<>();
         
         loadQuestionAndAnswersFromFile(questionSet1, "./set1.txt");
         loadQuestionAndAnswersFromFile(questionSet2, "./set2.txt");
@@ -71,33 +78,25 @@ public class ConnectedQuizClient implements Runnable{
         }
         
         String filePath_to_users = "./users.txt";
-        ArrayList<String> dataFrom_userTxt = new ArrayList<>();
 
         try (BufferedReader players_from_file = new BufferedReader(new FileReader(filePath_to_users))) {
             String line;
-            while ((line = players_from_file.readLine()) != null) {
-                dataFrom_userTxt.add(line);
-                dataFrom_userTxt.add(",");
-
+            while ((line = players_from_file.readLine()) != null) 
+            {
+                String[] usernamePasswordRole = line.split(":");
+                quizMembers.add(new QuizMember(usernamePasswordRole[0],usernamePasswordRole[1],usernamePasswordRole[2]));
             }
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             ex.printStackTrace();
             System.out.println("Nisam uspeo da ucitam fajl 'users.txt' ");
-        }
-
-        StringBuilder oneString_dataFrom_userTxt = new StringBuilder();
-        for (String user : dataFrom_userTxt) {
-            oneString_dataFrom_userTxt.append(user);
-        }
-
-        // Remove the trailing newline character if needed
-        if (oneString_dataFrom_userTxt.length() > 0) {
-            oneString_dataFrom_userTxt.setLength(oneString_dataFrom_userTxt.length() - 1);
-        }
-
-        String porukaZaSlanje = "Users =" + oneString_dataFrom_userTxt.toString();
-        System.out.println("iz fajla " + porukaZaSlanje);
-        this.pw.println(porukaZaSlanje);   
+        }  
+        
+        //Provera da li sam dobro ucitao fajl
+        //for(QuizMember qm : quizMembers)
+        //{
+        //    System.out.println(qm);
+        //}
     }
     
     void connectedClientsUpdateStatus()
@@ -211,6 +210,28 @@ public class ConnectedQuizClient implements Runnable{
                     String porukaZaSlanje = line;
                     broadcastMessage(line);
                 }
+                else if(line.startsWith("Login ="))
+                {
+                    String[] string = line.split("=");
+                    String[] usernamePasswordRole = string[1].split(":");
+
+                    String username = usernamePasswordRole[0];
+                    String password = usernamePasswordRole[1];
+                    String role = usernamePasswordRole[2];
+                    
+                    checkLoginFormat(quizMembers, pw, username, password, role);
+                    
+                }
+                else if(line.startsWith("ActiveUsers ="))
+                {
+                    String porukaZaSlanje = "ActiveUsers =";
+                    for(String qm : parent.getPresentMembers())
+                    {
+                        porukaZaSlanje += qm + ":";
+                    }
+                    System.out.println(porukaZaSlanje);
+                    broadcastMessage(porukaZaSlanje);
+                }
             }
             catch(IOException ex)
             {
@@ -304,5 +325,34 @@ public class ConnectedQuizClient implements Runnable{
             builder.append(s);
         }
         return builder.toString();
+    }
+    
+    public void checkLoginFormat(ArrayList<QuizMember> quizMembers, PrintWriter pw, String username, String password, String role)
+    {
+        if(!username.matches("^\\d.*") && username.matches("^[a-zA-Z0-9]*$") && 
+            password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$") && 
+            role.matches("^(admin|contestant)$"))
+        {
+            for(QuizMember qm : quizMembers)
+            {   
+                if(qm.getUsername().equals(username) && qm.getPassword().equals(password) && qm.getRole().equals(role))
+                {
+                    String porukaZaSlanje = "LoginApproved =";
+                    this.pw.println(porukaZaSlanje);
+                    parent.addPresentUsers(qm.getUsername());
+                    break;
+                }
+                else
+                {
+                    String porukaZaSlanje = "NotLoginApproved =";
+                    this.pw.println(porukaZaSlanje);
+                }
+            }
+        }
+        else
+        {   
+            String porukaZaSlanje = "WrongLoginFormat =";
+            this.pw.println(porukaZaSlanje);
+        }
     }
 }

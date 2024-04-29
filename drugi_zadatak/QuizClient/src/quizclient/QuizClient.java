@@ -29,9 +29,12 @@ public class QuizClient extends javax.swing.JFrame {
     private RecieveMessageFromServer rmfs;
     private String usernameFromTextField;
     
+    private int loginNumber = 0;
+    
     AdminGUI adminGUI;
     ContestantGUI contestantGUI;
     ArrayList<QuizMemberClient> activeMembers;
+    ArrayList<String> presentMembers;
     
     ArrayList<String> questionAndAnswers;
    
@@ -41,16 +44,21 @@ public class QuizClient extends javax.swing.JFrame {
     public QuizClient() {
         this.activeMembers = new ArrayList<>();
         this.questionAndAnswers = new ArrayList<>();
+        this.presentMembers = new ArrayList<>();
         initComponents(); 
         
         try
         {
+            adminGUI = new AdminGUI(this);
+            contestantGUI = new ContestantGUI(this);
             this.socket = new Socket("127.0.0.1", 6001);
             this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()), true); 
-            this.rmfs = new RecieveMessageFromServer(this);
+            this.rmfs = new RecieveMessageFromServer(this, adminGUI);
             Thread thr = new Thread(rmfs);
             thr.start();
+            
+            jButton_login.setEnabled(false);
 
         }
         catch(IOException ex)
@@ -107,7 +115,23 @@ public class QuizClient extends javax.swing.JFrame {
     public ArrayList<String> getQuestionAndAnswers() {
         return questionAndAnswers;
     }
-    
+
+    public void setLoginNumber(int loginNumber) {
+        this.loginNumber = loginNumber;
+    }
+
+    public int getLoginNumber() {
+        return loginNumber;
+    }
+
+    public void setPresentMembers(ArrayList<String> presentMembers) {
+        this.presentMembers = presentMembers;
+    }
+
+    public ArrayList<String> getPresentMembers() {
+        return presentMembers;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -122,11 +146,12 @@ public class QuizClient extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jTextField_username = new javax.swing.JTextField();
-        jButton_login = new javax.swing.JButton();
+        jButton_requestLogin = new javax.swing.JButton();
         jButton_exit = new javax.swing.JButton();
         jCheckBox_admin = new javax.swing.JCheckBox();
         jCheckBox_contestant = new javax.swing.JCheckBox();
         jTextField_password = new javax.swing.JTextField();
+        jButton_login = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LoginGUI");
@@ -142,11 +167,11 @@ public class QuizClient extends javax.swing.JFrame {
 
         jTextField_username.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
-        jButton_login.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton_login.setText("Login");
-        jButton_login.addActionListener(new java.awt.event.ActionListener() {
+        jButton_requestLogin.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButton_requestLogin.setText("Request");
+        jButton_requestLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_loginActionPerformed(evt);
+                jButton_requestLoginActionPerformed(evt);
             }
         });
 
@@ -166,30 +191,43 @@ public class QuizClient extends javax.swing.JFrame {
 
         jTextField_password.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
+        jButton_login.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButton_login.setText("Login");
+        jButton_login.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_loginActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(55, 55, 55)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2))
-                .addGap(37, 37, 37)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton_exit)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_login))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(89, 89, 89))
-                    .addComponent(jTextField_username, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addContainerGap()
+                        .addComponent(jButton_login, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jCheckBox_admin)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jCheckBox_contestant))
-                    .addComponent(jTextField_password))
+                        .addGap(55, 55, 55)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2))
+                        .addGap(37, 37, 37)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton_exit)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton_requestLogin))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(89, 89, 89))
+                            .addComponent(jTextField_username, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jCheckBox_admin)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jCheckBox_contestant))
+                            .addComponent(jTextField_password))))
                 .addContainerGap(111, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -209,9 +247,11 @@ public class QuizClient extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jTextField_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(67, 67, 67)
+                .addGap(18, 18, 18)
+                .addComponent(jButton_login, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_login)
+                    .addComponent(jButton_requestLogin)
                     .addComponent(jButton_exit))
                 .addContainerGap(59, Short.MAX_VALUE))
         );
@@ -220,7 +260,7 @@ public class QuizClient extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_loginActionPerformed
+    private void jButton_requestLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_requestLoginActionPerformed
         // TODO add your handling code here:
         if(jTextField_username.getText().equals(""))
         {
@@ -236,77 +276,59 @@ public class QuizClient extends javax.swing.JFrame {
         }
         else
         {
-            boolean adminFound = false;
-            boolean contestantFound = false;
-            
-            for(QuizMemberClient client : activeMembers)
-            {
-                /*
-                    FALI REGEX - FALI REGEX - FALI REGEX - FALI REGEX
-                    FALI REGEX - FALI REGEX - FALI REGEX - FALI REGEX
-                    FALI REGEX - FALI REGEX - FALI REGEX - FALI REGEX
-                */
-                
-                if(client.getUserName().equals(jTextField_username.getText()) && client.getPassword().equals(jTextField_password.getText()))
-                {
-                    if(client.getRole().equals(this.get_jCheckBox_Pressed_admin()))
-                    {
-                        adminFound = true;
-                        break;
-                    }
-                    else if(client.getRole().equals(this.get_jCheckBox_Pressed_contestant()))
-                    {
-                        usernameFromTextField = jTextField_username.getText();
-                        contestantFound = true;
-                        break;
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null, "You didn't choose admin/contestant");
-                    }
-                }
-            }
-            
-            // Promena GUIa iz LOGIN-GUI u AdminGUI
-            if(adminFound)
-            {
-                adminGUI = new AdminGUI(this);
-                
-                /*
-                    SALJEMO PORUKU KA SERVERU SA SADRZAJEM USERNAME-A
-                */
-                usernameFromTextField = jTextField_username.getText();
-                String porukaZaSlanje = "New user =" + jTextField_username.getText();
-                this.pw.println(porukaZaSlanje);
-                
-                adminGUI.show();
-                dispose();
-            }
-            // Promena GUIa iz LOGIN-GUI u ContestantGUI
-            if(contestantFound)
-            {
-                contestantGUI = new ContestantGUI(this);
-                rmfs.setContestantGUII(contestantGUI);
-                
-                /*
-                    SALJEMO PORUKU KA SERVERU SA SADRZAJEM USERNAME-A
-                */
-                
-                usernameFromTextField = jTextField_username.getText();
-                String porukaZaSlanje = "New user =" + jTextField_username.getText();
-                this.pw.println(porukaZaSlanje);
-                
-                contestantGUI.show();                                
-                dispose();
-            }
-            
-        }         
-    }//GEN-LAST:event_jButton_loginActionPerformed
+            String username = jTextField_username.getText();
+            String password = jTextField_password.getText();
+            String role = "";
+            if(jCheckBox_contestant.isSelected())
+                role = "contestant";
+            if(jCheckBox_admin.isSelected())
+                role = "admin";
+
+            String porukaZaSlanje = "Login =" + username + ":" + password + ":" + role;
+            this.pw.println(porukaZaSlanje);
+            System.out.println(porukaZaSlanje);
+            porukaZaSlanje = "";           
+        }
+        jButton_login.setEnabled(true);
+    }//GEN-LAST:event_jButton_requestLoginActionPerformed
 
     private void jButton_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_exitActionPerformed
         // TODO add your handling code here:
         System.exit(0);
     }//GEN-LAST:event_jButton_exitActionPerformed
+
+    private void jButton_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_loginActionPerformed
+        // TODO add your handling code here:
+        if (loginNumber == 1) 
+        {
+            if (jCheckBox_admin.isSelected()) 
+            {
+                String porukaZaSlanje = "ActiveUsers =";
+                this.pw.println(porukaZaSlanje);
+                
+                usernameFromTextField = jTextField_username.getText();
+                adminGUI.show();
+                dispose();
+            }
+            if (jCheckBox_contestant.isSelected()) 
+            {
+                String porukaZaSlanje = "ActiveUsers =";
+                this.pw.println(porukaZaSlanje);
+
+                usernameFromTextField = jTextField_username.getText();
+                contestantGUI.show();
+                dispose();
+            }
+        } 
+        else if (loginNumber == 2) 
+        {
+            JOptionPane.showMessageDialog(null, "Wrong Login Format/User does not exist!");
+        }   
+        else if(loginNumber == 4)
+        {
+            JOptionPane.showMessageDialog(null, "Wrong Login Format/User does not exist!");
+        }
+    }//GEN-LAST:event_jButton_loginActionPerformed
 
     /**
      * @param args the command line arguments
@@ -347,6 +369,7 @@ public class QuizClient extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton_exit;
     private javax.swing.JButton jButton_login;
+    private javax.swing.JButton jButton_requestLogin;
     private javax.swing.JCheckBox jCheckBox_admin;
     private javax.swing.JCheckBox jCheckBox_contestant;
     private javax.swing.JLabel jLabel1;

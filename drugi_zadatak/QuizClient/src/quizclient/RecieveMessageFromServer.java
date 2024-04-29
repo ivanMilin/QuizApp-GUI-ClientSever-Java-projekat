@@ -18,16 +18,20 @@ public class RecieveMessageFromServer implements Runnable{
     
     QuizClient parent;
     ContestantGUI contestantGUII;
+    AdminGUI adminGUI;
     BufferedReader br;
-    ArrayList<QuizMemberClient> loadedClientsFromFile;
+    ArrayList<QuizMemberClient> loadedClientsFromFile; //Ovaj naziv je ostao od pre pa da ne bih menjao kod zadrzao sam ga
+    ArrayList<String> presentMembers;
     
-    public RecieveMessageFromServer(QuizClient parent)
+    public RecieveMessageFromServer(QuizClient parent, AdminGUI adminGUI)
     {
         this.contestantGUII = new ContestantGUI(parent); 
         this.parent = parent;
+        this.adminGUI = adminGUI;
         this.br     = parent.getBr();
-        this.loadedClientsFromFile = new ArrayList<>();
+        this.loadedClientsFromFile = new ArrayList<>(); 
         this.contestantGUII = null;
+        this.presentMembers = new ArrayList<>();
     }
 
     public void setContestantGUII(ContestantGUI contestantGUII) {
@@ -47,45 +51,8 @@ public class RecieveMessageFromServer implements Runnable{
             try
             {
                 line = this.br.readLine();
-                
-                if(line.startsWith("Users ="))
-                {
-                    String[] dataFromServer = line.split("=");
-                    String[] username_password_role_points = dataFromServer[1].split(",");
-                    
-                    for (String user : username_password_role_points) 
-                    {
-                        String[] userDataParts = user.split(":");
-                        
-                        if (userDataParts.length == 3) 
-                        {
-                            //int points = Integer.parseInt(userDataParts[3].trim());
-                            
-                            QuizMemberClient client = new QuizMemberClient(userDataParts[0].trim(), // Username
-                                                                           userDataParts[1].trim(), // Password
-                                                                           userDataParts[2].trim()); // Role
-                                                                           //points); // Points
-                            loadedClientsFromFile.add(client);
-                        } 
-                        else 
-                        {
-                            System.out.println("Invalid user data format: " + user);
-                        }
-                    }
-                    
-                    int a = 5;
-                    System.out.println("Trenutno prisutni : ");
-                    
-                    for(QuizMemberClient member : loadedClientsFromFile)
-                    {
-                        System.out.println(member);
-                    }
-                    
-                    //System.out.println(line);
-                    parent.updateActiveQuizMembers(loadedClientsFromFile);
-                     
-                }
-                else if(line.startsWith("RecievingQuestionSet ="))
+                System.out.println(line);
+                if(line.startsWith("RecievingQuestionSet ="))
                 {
                     String[] beforeUsername_username_QuestionsAndAnswers = (line.split("="));
                     String username_QuestionsAndAnswers = beforeUsername_username_QuestionsAndAnswers[1];
@@ -148,7 +115,36 @@ public class RecieveMessageFromServer implements Runnable{
                         contestantGUII.setjTextField_helpMeFriend(fromWho + ":" + answer);
                     }
                 }
-                
+                else if(line.startsWith("NotLoginApproved ="))
+                {
+                    parent.setLoginNumber(4);
+                    System.out.println(parent.getLoginNumber());
+                }
+                else if(line.startsWith("LoginApproved ="))
+                {
+                    parent.setLoginNumber(1);
+                    System.out.println(parent.getLoginNumber());
+                }
+                else if(line.startsWith("WrongLoginFormat ="))
+                {
+                    parent.setLoginNumber(2);
+                    System.out.println(parent.getLoginNumber());
+                }
+                else if(line.startsWith("ActiveUsers ="))
+                {
+                    //System.out.println(line);
+                    String[] string = line.split("=");
+                    String[] activeUsers = string[1].split(":");
+                    
+                    presentMembers.clear();
+                    for(int i = 0; i < activeUsers.length; i++)
+                    {
+                        presentMembers.add(activeUsers[i]);
+                        System.out.println(activeUsers[i]);
+                    }
+                    //parent.setPresentMembers(presentMembers);
+                    this.adminGUI.refreshComboBoxes(presentMembers);
+                }
             }
             catch(IOException ex)
             {

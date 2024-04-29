@@ -21,21 +21,25 @@ public class AdminGUI extends javax.swing.JFrame {
 
     QuizClient parent;
     private BufferedReader br;
-    private ArrayList<QuizMemberClient> activeMembers;
+    private ArrayList<String> activeMembers;
     /**
      * Creates new form AdminGUI
      */
+    
     public AdminGUI(QuizClient parent) {
-        this.activeMembers = parent.getActiveMembers();
         this.parent = parent;
         this.br = parent.getBr();
         initComponents();
+        
         cbPresentMembers.removeAllItems();
-        for (QuizMemberClient member : activeMembers) {
-            cbPresentMembers.addItem(member.getUserName()); // Assuming getName() returns member's name
-        }
     }
 
+    public void refreshComboBoxes(ArrayList<String> activeUsers) {
+        cbPresentMembers.removeAllItems();
+        for (String member : activeUsers) {
+            cbPresentMembers.addItem(member);
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -128,11 +132,6 @@ public class AdminGUI extends javax.swing.JFrame {
         });
 
         jButton_sendQuestionSet.setText("Posalji pitanja");
-        jButton_sendQuestionSet.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_sendQuestionSetActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -156,7 +155,7 @@ public class AdminGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(270, 270, 270)
                                 .addComponent(jButton_removeUser)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                                 .addComponent(jButton_addUser))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addContainerGap()
@@ -181,10 +180,10 @@ public class AdminGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel3)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton_sendQuestionSet, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)))))
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton_sendQuestionSet)))))
                 .addContainerGap(154, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -230,6 +229,7 @@ public class AdminGUI extends javax.swing.JFrame {
 
     private void jButton_addUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_addUserActionPerformed
         // TODO add your handling code here:
+        /*
         if(jCheckBox_admin.isSelected() || jCheckBox_contestant.isSelected())
         {
             if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
@@ -301,10 +301,12 @@ public class AdminGUI extends javax.swing.JFrame {
         {
             JOptionPane.showMessageDialog(null, "You forgot to choose role");
         }
+        */
     }//GEN-LAST:event_jButton_addUserActionPerformed
 
     private void jButton_removeUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_removeUserActionPerformed
         // TODO add your handling code here:
+        /*
         Iterator<QuizMemberClient> it = this.activeMembers.iterator();
         while(it.hasNext())
         {
@@ -335,40 +337,8 @@ public class AdminGUI extends javax.swing.JFrame {
         {
             cbPresentMembers.addItem(member.getUserName());
         }
+        */
     }//GEN-LAST:event_jButton_removeUserActionPerformed
-
-    private void jButton_sendQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendQuestionSetActionPerformed
-        // TODO add your handling code here:
-        
-        ButtonModel selectedModel = buttonGroup1.getSelection();
-        
-        if(selectedModel != null)
-        {
-            Enumeration<AbstractButton> buttons = buttonGroup1.getElements();
-            if(!cbPresentMembers.getSelectedItem().equals(parent.getUsernameFromTextField()))
-            {    
-                while(buttons.hasMoreElements())
-                {
-                    AbstractButton button = buttons.nextElement();
-                    if(button.isSelected())
-                    {
-                                String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
-                                System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
-                                String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
-                                parent.getPw().println(porukaZaSlanje);
-                    }
-                }
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(null, "You can't send questionset to yourself!");
-            }
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(null, "You didn't chose question set");
-        }
-    }//GEN-LAST:event_jButton_sendQuestionSetActionPerformed
 
     /**
      * @param args the command line arguments

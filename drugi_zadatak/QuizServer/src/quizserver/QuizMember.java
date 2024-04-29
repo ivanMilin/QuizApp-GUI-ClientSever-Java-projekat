@@ -2,30 +2,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package quizclient;
-
-import java.util.ArrayList;
+package quizserver;
 
 /**
  *
  * @author Ivan Milin
  */
-public class QuizMemberClient {
+public class QuizMember {
     
     private String username;
     private String password;
     private String role;
-    private int points;
-    //private ArrayList<Integer> answeredQuestionSets;
 
-    public QuizMemberClient(String username, String password, String role) {
+    public QuizMember(String username, String password, String role) {
         this.username = username;
         this.password = password;
         this.role = role;
-        this.points = 0;
     }
 
-    public String getUserName() {
+    public String getUsername() {
         return username;
     }
 
@@ -36,14 +31,8 @@ public class QuizMemberClient {
     public String getRole() {
         return role;
     }
-
-    public int getPoints() {
-        return points;
-    }
     
-    @Override
     public String toString(){
-            return "    " + username + " " + password + " " + role + " " + points;
-
+            return "    " + username + ":" + password + ":" + role;
     }
 }
