@@ -53,7 +53,7 @@ public class ContestantGUI extends javax.swing.JFrame {
         this.questionNumber = 0;
         initComponents();
         
-        this.activeMembers = parent.getActiveMembers();
+        System.out.println(parent.getUsernameFromTextField());
         jLabel2.setText(parent.getUsernameFromTextField());
     }
 
@@ -330,10 +330,9 @@ public class ContestantGUI extends javax.swing.JFrame {
         answersList.clear();
         
         jCombo_presentMembers.removeAllItems();
-        
-        for(QuizMemberClient member : activeMembers)
+        for(String member : parent.getPresentMembers())
         {
-            jCombo_presentMembers.addItem(member.getUserName());
+            jCombo_presentMembers.addItem(member);
         }
     }//GEN-LAST:event_jButton_requestQuestionSetActionPerformed
 

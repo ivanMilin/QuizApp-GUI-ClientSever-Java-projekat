@@ -5,6 +5,7 @@
 package quizserver;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -186,18 +187,6 @@ public class ConnectedQuizClient implements Runnable{
                         broadcastMessage(porukaZaSlanje);
                     }  
                 }
-                else if(line.startsWith("UsersAfterRemove ="))
-                {
-                    String[] usersAfterRemove = line.split("=");
-                    removeFile_createFile((usersAfterRemove[1].trim()).split(" "));
-                    System.out.println("UsersAfterRemove =" + usersAfterRemove[1].trim());
-                }
-                else if(line.startsWith("UsersAfterAdding ="))
-                {
-                    String[] usersAfterAdding = line.split("=");
-                    removeFile_createFile((usersAfterAdding[1].trim()).split(" "));
-                    System.out.println("UsersAfterAdding =" + usersAfterAdding[1].trim());
-                }
                 else if(line.startsWith("HelpMeFriend ="))
                 {
                     //HelpMeFried =ivan:admin|1. Ukoliko za nekoga ka�emo da ima demenciju, on je:
@@ -232,6 +221,19 @@ public class ConnectedQuizClient implements Runnable{
                     System.out.println(porukaZaSlanje);
                     broadcastMessage(porukaZaSlanje);
                 }
+                else if(line.startsWith("RemoveUserFromFile ="))
+                {
+                    String[] string = line.split("=");
+                    String removeUser = string[1];
+                    removeUserFromFile(removeUser, "./users.txt");
+
+                }
+                else if(line.startsWith("AddNewUser ="))
+                {
+                    String[] string = line.split("=");
+                    String addNewUser = string[1];
+                    addUserToFile(addNewUser,"./users.txt");
+                }
             }
             catch(IOException ex)
             {
@@ -241,30 +243,68 @@ public class ConnectedQuizClient implements Runnable{
     }
     
     // Ova metoda se poziva kad admin hoce da doda ili obrise korisnika iz fajla
-    public static void removeFile_createFile(String[] usersAfterRemove)
-    {
-        File existingFile = new File("users.txt");
-        
-        if(existingFile.exists())
+    public static void removeUserFromFile(String usernameToRemove, String filePath) {
+        // Read the file and load its content into an ArrayList
+        ArrayList<String> usersFromFile = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) 
         {
-            existingFile.delete();
-        }
-        
-        File newFile = new File("users.txt");
-        try(FileWriter writer = new FileWriter(newFile))
-        {
-            for(String line : usersAfterRemove)
+            String line;
+            while ((line = reader.readLine()) != null) 
             {
-                writer.write(line);
-                writer.write(System.lineSeparator());
+                usersFromFile.add(line);
             }
-            System.out.println("Podaci upisani u fajl " + newFile);
-        }
-        catch(IOException ex)
+        } 
+        catch (IOException e) 
         {
-            System.out.println("An error occurred while creating file users.txt");
-            ex.printStackTrace();
+            e.printStackTrace();
+            return;
         }
+
+        usersFromFile.removeIf(user -> user.startsWith(usernameToRemove + ":"));
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) 
+        {
+            for (String user : usersFromFile)
+            {
+                writer.write(user);
+                writer.newLine();
+            }
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+
+        System.out.println("User '" + usernameToRemove + "' removed from the file.");
+    }
+
+    public static void addUserToFile(String newUser, String filePath) {
+        // Read the file and load its content into an ArrayList
+        ArrayList<String> usersFromFile = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                usersFromFile.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        // Add the new user to the end of the ArrayList
+        usersFromFile.add(newUser);
+
+        // Write the updated ArrayList back to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String user : usersFromFile) {
+                writer.write(user);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("New user added to the file : " + newUser);
     }
      
     public static void loadQuestionAndAnswersFromFile(ArrayList<String> set, String filePath) 

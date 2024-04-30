@@ -21,7 +21,7 @@ public class AdminGUI extends javax.swing.JFrame {
 
     QuizClient parent;
     private BufferedReader br;
-    private ArrayList<String> activeMembers;
+    private ArrayList<String> comboboxUsers;
     /**
      * Creates new form AdminGUI
      */
@@ -30,7 +30,7 @@ public class AdminGUI extends javax.swing.JFrame {
         this.parent = parent;
         this.br = parent.getBr();
         initComponents();
-        
+        comboboxUsers = new ArrayList<>();
         cbPresentMembers.removeAllItems();
     }
 
@@ -132,6 +132,11 @@ public class AdminGUI extends javax.swing.JFrame {
         });
 
         jButton_sendQuestionSet.setText("Posalji pitanja");
+        jButton_sendQuestionSet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_sendQuestionSetActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -155,7 +160,7 @@ public class AdminGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(270, 270, 270)
                                 .addComponent(jButton_removeUser)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
                                 .addComponent(jButton_addUser))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addContainerGap()
@@ -181,10 +186,10 @@ public class AdminGUI extends javax.swing.JFrame {
                                 .addContainerGap()
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton_sendQuestionSet)))))
-                .addContainerGap(154, Short.MAX_VALUE))
+                .addContainerGap(164, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,7 +234,6 @@ public class AdminGUI extends javax.swing.JFrame {
 
     private void jButton_addUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_addUserActionPerformed
         // TODO add your handling code here:
-        /*
         if(jCheckBox_admin.isSelected() || jCheckBox_contestant.isSelected())
         {
             if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
@@ -243,25 +247,14 @@ public class AdminGUI extends javax.swing.JFrame {
 
                     QuizMemberClient member = new QuizMemberClient(username, password, role);
 
-                    activeMembers.add(member);
-                    cbPresentMembers.addItem(username);
-
-                    System.out.println("AdminGUI :");
-                    cbPresentMembers.removeAllItems();
-
-                    for (QuizMemberClient cb_member : activeMembers) {
-                        cbPresentMembers.addItem(cb_member.getUserName());
-                    }
-
-                    String porukaZaSlanje = "UsersAfterAdding =";
-                    for(QuizMemberClient printmember : activeMembers)
-                    {
-                        System.out.println(printmember);
-                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole();
-                    }
+                    comboboxUsers = parent.getPresentMembers();
+                    comboboxUsers.add(member.getUserName());                    
+                    refreshComboBoxes(comboboxUsers);
+                            
+                    String porukaZaSlanje = "AddNewUser =" + ":" + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole();
                     parent.getPw().println(porukaZaSlanje);
 
-                    System.out.println("");
+                    //System.out.println("");
                 }
                 else if(jCheckBox_contestant.isSelected())
                 {
@@ -269,27 +262,25 @@ public class AdminGUI extends javax.swing.JFrame {
                     String role = "contestant";
                     String username = jTextField_username.getText();
                     String password = jTextField_password.getText();
-
-                    QuizMemberClient member = new QuizMemberClient(username, password, role);
-
-                    activeMembers.add(member);
-                    cbPresentMembers.addItem(username);
-
-                    System.out.println("AdminGUI :");
-                    cbPresentMembers.removeAllItems();
-
-                    for (QuizMemberClient cb_member : activeMembers) {
-                        cbPresentMembers.addItem(cb_member.getUserName()); // Assuming getName() returns member's name
-                    }
-
-                    String porukaZaSlanje = "UsersAfterAdding =";
-                    for(QuizMemberClient printmember : activeMembers)
+                
+                    if(!username.matches("^\\d.*") && username.matches("^[a-zA-Z0-9]*$") && 
+                        password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$") && 
+                        role.matches("^(admin|contestant)$"))
                     {
-                        System.out.println(printmember);
-                        porukaZaSlanje +=  " " + printmember.getUserName() + ":" + printmember.getPassword() + ":" + printmember.getRole();
+                        QuizMemberClient member = new QuizMemberClient(username, password, role);
+
+                        comboboxUsers = parent.getPresentMembers();
+                        comboboxUsers.add(member.getUserName());
+                        refreshComboBoxes(comboboxUsers);
+                        
+                        String porukaZaSlanje = "AddNewUser =" + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole();
+                        System.out.println(porukaZaSlanje);
+                        parent.getPw().println(porukaZaSlanje);                            
                     }
-                    parent.getPw().println(porukaZaSlanje);
-                    System.out.println("");
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null, "Wrong Regex format!");
+                    }
                 }
             }
             else
@@ -301,44 +292,74 @@ public class AdminGUI extends javax.swing.JFrame {
         {
             JOptionPane.showMessageDialog(null, "You forgot to choose role");
         }
-        */
     }//GEN-LAST:event_jButton_addUserActionPerformed
 
     private void jButton_removeUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_removeUserActionPerformed
         // TODO add your handling code here:
-        /*
-        Iterator<QuizMemberClient> it = this.activeMembers.iterator();
-        while(it.hasNext())
+        if(!jTextField_username.getText().matches("^\\d.*") && jTextField_username.getText().matches("^[a-zA-Z0-9]*$") && 
+            jTextField_password.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$"))
         {
+            Iterator<String> it = parent.getPresentMembers().iterator();
+
             if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
             {
-                if(it.next().getUserName().equals(jTextField_username.getText()))
+                while(it.hasNext())
                 {
-                    it.remove();
+                    if(it.next().equals(jTextField_username.getText()))
+                    {
+                        it.remove();
+                    }
                 }
             }
             else
             {
                 JOptionPane.showMessageDialog(null, "You can't remove yourself!");
-                break;
+            }
+
+            refreshComboBoxes(parent.getPresentMembers());
+
+            String porukaZaSlanje = "RemoveUserFromFile =" + jTextField_username.getText();
+            System.out.println(porukaZaSlanje);
+            parent.getPw().println(porukaZaSlanje);
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Wrong Regex format!");
+        }
+        
+    }//GEN-LAST:event_jButton_removeUserActionPerformed
+
+    private void jButton_sendQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendQuestionSetActionPerformed
+        // TODO add your handling code here:
+        ButtonModel selectedModel = buttonGroup1.getSelection();
+        
+        if(selectedModel != null)
+        {
+            Enumeration<AbstractButton> buttons = buttonGroup1.getElements();
+            if(!cbPresentMembers.getSelectedItem().equals(parent.getUsernameFromTextField()))
+            {    
+                while(buttons.hasMoreElements())
+                {
+                    AbstractButton button = buttons.nextElement();
+                    if(button.isSelected())
+                    {
+                                String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
+                                System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
+                                String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
+                                parent.getPw().println(porukaZaSlanje);
+                    }
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "You can't send questionset to yourself!");
             }
         }
-        cbPresentMembers.removeAllItems();
-        System.out.println("AdminGUI :");
-        String porukaZaSlanje = "UsersAfterRemove =";
-        for(QuizMemberClient member : activeMembers)
+        else
         {
-            System.out.println(member);
-            porukaZaSlanje +=  " " + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole();
+            JOptionPane.showMessageDialog(null, "You didn't chose question set");
         }
-        parent.getPw().println(porukaZaSlanje);
-        
-        for(QuizMemberClient member : activeMembers)
-        {
-            cbPresentMembers.addItem(member.getUserName());
-        }
-        */
-    }//GEN-LAST:event_jButton_removeUserActionPerformed
+    }//GEN-LAST:event_jButton_sendQuestionSetActionPerformed
 
     /**
      * @param args the command line arguments
