@@ -2,3 +2,4 @@ admin1:Adminn#1:admin
 jovan1:Jovann#1:contestant
 ivan1:Milinn#1:contestant
 marko1:Markoo#1:contestant
+ivan1:Ivann#1:contestant

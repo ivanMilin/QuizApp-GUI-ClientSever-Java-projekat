@@ -32,6 +32,9 @@ public class AdminGUI extends javax.swing.JFrame {
         initComponents();
         comboboxUsers = new ArrayList<>();
         cbPresentMembers.removeAllItems();
+        
+        jButton_addUser.setEnabled(false);
+        jButton_removeUser.setEnabled(false);
     }
 
     public void refreshComboBoxes(ArrayList<String> activeUsers) {
@@ -69,6 +72,7 @@ public class AdminGUI extends javax.swing.JFrame {
         jButton_removeUser = new javax.swing.JButton();
         jButton_sendQuestionSet = new javax.swing.JButton();
         cbPresentMembers = new javax.swing.JComboBox<>();
+        jButton_checkFormat = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AdminGUI");
@@ -138,32 +142,39 @@ public class AdminGUI extends javax.swing.JFrame {
             }
         });
 
+        jButton_checkFormat.setText("CheckFormat");
+        jButton_checkFormat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_checkFormatActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(196, 196, 196))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField_password, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(124, 124, 124)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel5)
-                                .addComponent(jLabel6)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(62, 62, 62)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(118, 118, 118)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(270, 270, 270)
-                                .addComponent(jButton_removeUser)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
-                                .addComponent(jButton_addUser))
+                                .addComponent(jButton_removeUser, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton_addUser, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton_checkFormat, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jTextField_password)
+                            .addComponent(jTextField_username))
+                        .addContainerGap(115, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                         .addComponent(jLabel2)
@@ -183,20 +194,23 @@ public class AdminGUI extends javax.swing.JFrame {
                                         .addComponent(jCheckBox4))
                                     .addComponent(jCheckBox_contestant, javax.swing.GroupLayout.Alignment.TRAILING)))
                             .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
                                 .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                                 .addComponent(cbPresentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton_sendQuestionSet)))))
-                .addContainerGap(164, Short.MAX_VALUE))
+                                .addComponent(jButton_sendQuestionSet)))
+                        .addGap(103, 103, 103))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(228, 228, 228)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(46, 46, 46)
+                .addGap(37, 37, 37)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jCheckBox1)
@@ -224,8 +238,9 @@ public class AdminGUI extends javax.swing.JFrame {
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_addUser)
-                    .addComponent(jButton_removeUser))
-                .addContainerGap(83, Short.MAX_VALUE))
+                    .addComponent(jButton_removeUser)
+                    .addComponent(jButton_checkFormat))
+                .addContainerGap(74, Short.MAX_VALUE))
         );
 
         pack();
@@ -234,71 +249,74 @@ public class AdminGUI extends javax.swing.JFrame {
 
     private void jButton_addUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_addUserActionPerformed
         // TODO add your handling code here:
-        if(jCheckBox_admin.isSelected() || jCheckBox_contestant.isSelected())
+        if(parent.getLoginNumber() == 3)
         {
-            if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
+            if(jCheckBox_admin.isSelected() || jCheckBox_contestant.isSelected())
             {
-                if(jCheckBox_admin.isSelected())
+                if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
                 {
-                    int points = 0;
-                    String role = "admin";
-                    String username = jTextField_username.getText();
-                    String password = jTextField_password.getText();
-
-                    QuizMemberClient member = new QuizMemberClient(username, password, role);
-
-                    comboboxUsers = parent.getPresentMembers();
-                    comboboxUsers.add(member.getUserName());                    
-                    refreshComboBoxes(comboboxUsers);
-                            
-                    String porukaZaSlanje = "AddNewUser =" + ":" + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole();
-                    parent.getPw().println(porukaZaSlanje);
-
-                    //System.out.println("");
-                }
-                else if(jCheckBox_contestant.isSelected())
-                {
-                    int points = 0;
-                    String role = "contestant";
-                    String username = jTextField_username.getText();
-                    String password = jTextField_password.getText();
-                
-                    if(!username.matches("^\\d.*") && username.matches("^[a-zA-Z0-9]*$") && 
-                        password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$") && 
-                        role.matches("^(admin|contestant)$"))
+                    if(jCheckBox_admin.isSelected())
                     {
+                        int points = 0;
+                        String role = "admin";
+                        String username = jTextField_username.getText();
+                        String password = jTextField_password.getText();
+
+                        QuizMemberClient member = new QuizMemberClient(username, password, role);
+
+                        comboboxUsers = parent.getPresentMembers();
+                        comboboxUsers.add(member.getUserName());                    
+                        refreshComboBoxes(comboboxUsers);
+
+                        String porukaZaSlanje = "AddNewUser =" + ":" + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole();
+                        parent.getPw().println(porukaZaSlanje);
+
+                        //System.out.println("");
+                    }
+                    else if(jCheckBox_contestant.isSelected())
+                    {
+                        int points = 0;
+                        String role = "contestant";
+                        String username = jTextField_username.getText();
+                        String password = jTextField_password.getText();
+
                         QuizMemberClient member = new QuizMemberClient(username, password, role);
 
                         comboboxUsers = parent.getPresentMembers();
                         comboboxUsers.add(member.getUserName());
                         refreshComboBoxes(comboboxUsers);
-                        
+
                         String porukaZaSlanje = "AddNewUser =" + member.getUserName() + ":" + member.getPassword() + ":" + member.getRole();
                         System.out.println(porukaZaSlanje);
-                        parent.getPw().println(porukaZaSlanje);                            
+                        parent.getPw().println(porukaZaSlanje); 
+
+                        jButton_addUser.setEnabled(false);
+                        jButton_removeUser.setEnabled(false);
                     }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null, "Wrong Regex format!");
-                    }
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "You can't add same username!");
                 }
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "You can't add same username!");
+                JOptionPane.showMessageDialog(null, "You forgot to choose role");
             }
         }
-        else
+        if(parent.getLoginNumber() == 5)
         {
-            JOptionPane.showMessageDialog(null, "You forgot to choose role");
+            jButton_addUser.setEnabled(false);
+            jButton_removeUser.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Wrong format, try again");
         }
     }//GEN-LAST:event_jButton_addUserActionPerformed
 
     private void jButton_removeUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_removeUserActionPerformed
         // TODO add your handling code here:
-        if(!jTextField_username.getText().matches("^\\d.*") && jTextField_username.getText().matches("^[a-zA-Z0-9]*$") && 
-            jTextField_password.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$"))
+        if(parent.getLoginNumber() == 3)
         {
+        
             Iterator<String> it = parent.getPresentMembers().iterator();
 
             if(!parent.getUsernameFromTextField().equals(jTextField_username.getText()))
@@ -310,6 +328,9 @@ public class AdminGUI extends javax.swing.JFrame {
                         it.remove();
                     }
                 }
+
+                jButton_addUser.setEnabled(false);
+                jButton_removeUser.setEnabled(false);
             }
             else
             {
@@ -322,11 +343,12 @@ public class AdminGUI extends javax.swing.JFrame {
             System.out.println(porukaZaSlanje);
             parent.getPw().println(porukaZaSlanje);
         }
-        else
+        if(parent.getLoginNumber() == 5)
         {
-            JOptionPane.showMessageDialog(null, "Wrong Regex format!");
+            jButton_addUser.setEnabled(false);
+            jButton_removeUser.setEnabled(false);
+            JOptionPane.showMessageDialog(null, "Wrong format, try again");
         }
-        
     }//GEN-LAST:event_jButton_removeUserActionPerformed
 
     private void jButton_sendQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendQuestionSetActionPerformed
@@ -360,6 +382,17 @@ public class AdminGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "You didn't chose question set");
         }
     }//GEN-LAST:event_jButton_sendQuestionSetActionPerformed
+
+    private void jButton_checkFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_checkFormatActionPerformed
+        // TODO add your handling code here:
+        
+        String porukaZaSlanje = "CheckFormat =" + jTextField_username.getText() + ":" + jTextField_password.getText();
+        System.out.println(porukaZaSlanje);
+        parent.getPw().println(porukaZaSlanje);
+        
+        jButton_addUser.setEnabled(true);
+        jButton_removeUser.setEnabled(true);
+    }//GEN-LAST:event_jButton_checkFormatActionPerformed
 
     /**
      * @param args the command line arguments
@@ -403,6 +436,7 @@ public class AdminGUI extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JComboBox<String> cbPresentMembers;
     private javax.swing.JButton jButton_addUser;
+    private javax.swing.JButton jButton_checkFormat;
     private javax.swing.JButton jButton_removeUser;
     private javax.swing.JButton jButton_sendQuestionSet;
     private javax.swing.JCheckBox jCheckBox1;

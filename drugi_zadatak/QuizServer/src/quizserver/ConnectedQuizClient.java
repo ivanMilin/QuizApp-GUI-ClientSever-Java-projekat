@@ -234,6 +234,14 @@ public class ConnectedQuizClient implements Runnable{
                     String addNewUser = string[1];
                     addUserToFile(addNewUser,"./users.txt");
                 }
+                else if(line.startsWith("CheckFormat ="))
+                {
+                    String[] string = line.split("=");
+                    String[] usernamePassword = string[1].split(":");
+
+                    voidCheckFormatForNewMembers(usernamePassword[0],usernamePassword[1]);
+
+                }
             }
             catch(IOException ex)
             {
@@ -340,15 +348,6 @@ public class ConnectedQuizClient implements Runnable{
             {
                 set.add(questionAndAnswers);
             }
-            
-            /*
-            System.out.println("Loaded questions from file:");
-            for (String item : set) 
-            {
-                System.out.println(item);
-            }
-            System.out.println("=============================");
-            */
         } 
         catch (IOException ex) 
         {
@@ -393,6 +392,20 @@ public class ConnectedQuizClient implements Runnable{
         {   
             String porukaZaSlanje = "WrongLoginFormat =";
             this.pw.println(porukaZaSlanje);
+        }
+    }
+
+    public void voidCheckFormatForNewMembers(String username, String password)
+    {
+
+        if(!username.matches("^\\d.*") && username.matches("^[a-zA-Z0-9]*$") && 
+            password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$"))
+        {
+            this.pw.println("ApprovedFormat =");
+        }
+        else
+        {
+            this.pw.println("NotApprovedFormat =");
         }
     }
 }

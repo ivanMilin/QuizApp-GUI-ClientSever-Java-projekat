@@ -146,6 +146,14 @@ public class RecieveMessageFromServer implements Runnable{
                     parent.setPresentMembers(presentMembers);
                     this.adminGUI.refreshComboBoxes(presentMembers);
                 }
+                else if(line.startsWith("ApprovedFormat ="))
+                {
+                    parent.setLoginNumber(3);
+                }
+                else if(line.startsWith("NotApprovedFormat ="))
+                {
+                     parent.setLoginNumber(5);
+                }
             }
             catch(IOException ex)
             {
