@@ -43,6 +43,7 @@ public class AdminGUI extends javax.swing.JFrame {
             cbPresentMembers.addItem(member);
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -365,10 +366,10 @@ public class AdminGUI extends javax.swing.JFrame {
                     AbstractButton button = buttons.nextElement();
                     if(button.isSelected())
                     {
-                                String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
-                                System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
-                                String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
-                                parent.getPw().println(porukaZaSlanje);
+                        String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
+                        System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
+                        String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
+                        parent.getPw().println(porukaZaSlanje);
                     }
                 }
             }

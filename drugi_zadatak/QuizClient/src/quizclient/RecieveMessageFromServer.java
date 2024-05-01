@@ -154,6 +154,10 @@ public class RecieveMessageFromServer implements Runnable{
                 {
                      parent.setLoginNumber(5);
                 }
+                else if(line.startsWith("UpdateScoreboard ="))
+                {
+                    System.out.println(line);
+                }
             }
             catch(IOException ex)
             {

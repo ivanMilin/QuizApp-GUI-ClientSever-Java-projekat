@@ -6,7 +6,6 @@ package quizserver;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -76,28 +77,7 @@ public class ConnectedQuizClient implements Runnable{
         catch(IOException ex)
         {
             Logger.getLogger(ConnectedQuizClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        String filePath_to_users = "./users.txt";
-
-        try (BufferedReader players_from_file = new BufferedReader(new FileReader(filePath_to_users))) {
-            String line;
-            while ((line = players_from_file.readLine()) != null) 
-            {
-                String[] usernamePasswordRole = line.split(":");
-                quizMembers.add(new QuizMember(usernamePasswordRole[0],usernamePasswordRole[1],usernamePasswordRole[2]));
-            }
         } 
-        catch (IOException ex) {
-            ex.printStackTrace();
-            System.out.println("Nisam uspeo da ucitam fajl 'users.txt' ");
-        }  
-        
-        //Provera da li sam dobro ucitao fajl
-        //for(QuizMember qm : quizMembers)
-        //{
-        //    System.out.println(qm);
-        //}
     }
     
     void connectedClientsUpdateStatus()
@@ -233,6 +213,14 @@ public class ConnectedQuizClient implements Runnable{
                     String[] string = line.split("=");
                     String addNewUser = string[1];
                     addUserToFile(addNewUser,"./users.txt");
+                    
+                    String[] user = addNewUser.split(":");
+                    if(user[2].equals("contestant"))
+                    {
+                        String usernamePoints = user[0] + ":0/0";
+                        addUserToFile(usernamePoints,"./scoreboard.txt");
+                    }
+                    
                 }
                 else if(line.startsWith("CheckFormat ="))
                 {
@@ -242,6 +230,33 @@ public class ConnectedQuizClient implements Runnable{
                     voidCheckFormatForNewMembers(usernamePassword[0],usernamePassword[1]);
 
                 }
+                else if (line.startsWith("IncrementPoints =")) 
+                {
+                    final String[] string = line.split("=");
+                    final String[] username_numberOfPoints = string[1].split(":");
+                    final String username = username_numberOfPoints[0];
+                    final int newPoints = Integer.parseInt(username_numberOfPoints[1]);
+                    final int answeredSets = Integer.parseInt(username_numberOfPoints[2]);
+
+                    // Load existing scoreboard data into a map
+                    Map<String, String> scoreboardData = loadScoreboardData();
+
+                    // Update points for the specified user
+                    String userData = scoreboardData.getOrDefault(username, "0/0");
+                    String[] userPoints = userData.split("/");
+                    int currentPoints = Integer.parseInt(userPoints[0]);
+                    int currentAnsweredSets = Integer.parseInt(userPoints[1]);
+
+                    // Increment points and answered sets
+                    currentPoints = newPoints;
+                    currentAnsweredSets = answeredSets;
+
+                    // Update scoreboard data
+                    scoreboardData.put(username, currentPoints + "/" + currentAnsweredSets);
+
+                    // Rewrite the scoreboard file
+                    rewriteScoreboardFile(scoreboardData);
+                }
             }
             catch(IOException ex)
             {
@@ -250,6 +265,7 @@ public class ConnectedQuizClient implements Runnable{
         }
     }
     
+    // ===================================================================================
     // Ova metoda se poziva kad admin hoce da doda ili obrise korisnika iz fajla
     public static void removeUserFromFile(String usernameToRemove, String filePath) {
         // Read the file and load its content into an ArrayList
@@ -286,6 +302,7 @@ public class ConnectedQuizClient implements Runnable{
         System.out.println("User '" + usernameToRemove + "' removed from the file.");
     }
 
+    // ===================================================================================
     public static void addUserToFile(String newUser, String filePath) {
         // Read the file and load its content into an ArrayList
         ArrayList<String> usersFromFile = new ArrayList<>();
@@ -315,6 +332,7 @@ public class ConnectedQuizClient implements Runnable{
         System.out.println("New user added to the file : " + newUser);
     }
      
+    // ===================================================================================
     public static void loadQuestionAndAnswersFromFile(ArrayList<String> set, String filePath) 
     {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) 
@@ -356,6 +374,7 @@ public class ConnectedQuizClient implements Runnable{
         }
     }
 
+    // ===================================================================================
     public static String concatenate_QuestionsAndAnswersFromSet_inOneString(ArrayList<String> set)
     {
         StringBuilder builder = new StringBuilder();
@@ -366,12 +385,28 @@ public class ConnectedQuizClient implements Runnable{
         return builder.toString();
     }
     
+    // ===================================================================================
     public void checkLoginFormat(ArrayList<QuizMember> quizMembers, PrintWriter pw, String username, String password, String role)
     {
         if(!username.matches("^\\d.*") && username.matches("^[a-zA-Z0-9]*$") && 
             password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$") && 
             role.matches("^(admin|contestant)$"))
         {
+            String filePath_to_users = "./users.txt";
+            
+            try (BufferedReader players_from_file = new BufferedReader(new FileReader(filePath_to_users))) {
+                String file_line;
+                while ((file_line = players_from_file.readLine()) != null) 
+                {
+                    String[] usernamePasswordRole_line = file_line.split(":");
+                    quizMembers.add(new QuizMember(usernamePasswordRole_line[0],usernamePasswordRole_line[1],usernamePasswordRole_line[2]));
+                }
+            } 
+            catch (IOException ex) {
+                ex.printStackTrace();
+                System.out.println("Nisam uspeo da ucitam fajl 'users.txt' ");
+            } 
+            
             for(QuizMember qm : quizMembers)
             {   
                 if(qm.getUsername().equals(username) && qm.getPassword().equals(password) && qm.getRole().equals(role))
@@ -395,6 +430,7 @@ public class ConnectedQuizClient implements Runnable{
         }
     }
 
+    // ===================================================================================
     public void voidCheckFormatForNewMembers(String username, String password)
     {
 
@@ -406,6 +442,39 @@ public class ConnectedQuizClient implements Runnable{
         else
         {
             this.pw.println("NotApprovedFormat =");
+        }
+    }
+    // ===================================================================================
+    private Map<String, String> loadScoreboardData() {
+        Map<String, String> scoreboardData = new HashMap<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("./scoreboard.txt"))) 
+        {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                scoreboardData.put(parts[0], parts[1]);
+            }
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        return scoreboardData;
+    }
+    // ===================================================================================
+    private void rewriteScoreboardFile(Map<String, String> scoreboardData) 
+    {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./scoreboard.txt"))) 
+        {
+            for (Map.Entry<String, String> entry : scoreboardData.entrySet()) 
+            {
+                writer.write(entry.getKey() + ":" + entry.getValue());
+                writer.newLine();
+            }
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
         }
     }
 }

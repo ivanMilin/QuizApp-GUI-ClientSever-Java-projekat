@@ -37,7 +37,7 @@ public class ContestantGUI extends javax.swing.JFrame {
     String[] answer3;
     
     private int numberOfTrueAnsweredQuestions;
-    
+    private int numberOfAnsweredSets;
     int questionNumber;
     /**
      * Creates new form ContestantGUI
@@ -53,8 +53,19 @@ public class ContestantGUI extends javax.swing.JFrame {
         this.questionNumber = 0;
         initComponents();
         
-        System.out.println(parent.getUsernameFromTextField());
-        jLabel2.setText(parent.getUsernameFromTextField());
+        //System.out.println(parent.getUsernameFromTextField());
+
+        jButton_50_50.setEnabled(false);
+        jButton_answerA.setEnabled(false);
+        jButton_answerB.setEnabled(false);
+        jButton_answerC.setEnabled(false);
+        jButton_answerD.setEnabled(false);
+        jButton_friendsHelp.setEnabled(false);
+        jButton_nextQuestion.setEnabled(false);
+        jButton_answersFriend.setEnabled(false);
+        jCombo_presentMembers.setEnabled(false);
+        jButton_changeQuestion.setEnabled(false);
+        jButton_showCurrentScore.setEnabled(false);
     }
 
      //jTextField_helpMeFriend
@@ -67,6 +78,12 @@ public class ContestantGUI extends javax.swing.JFrame {
         this.jTextField_helpMeFriend.setText(jTextField_helpMeFriend);
     }
     
+    public void refreshComboBoxes(ArrayList<String> activeUsers) {
+        jCombo_presentMembers.removeAllItems();
+        for (String member : activeUsers) {
+            jCombo_presentMembers.addItem(member);
+        }
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -102,6 +119,11 @@ public class ContestantGUI extends javax.swing.JFrame {
 
         jButton_showCurrentScore.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton_showCurrentScore.setText("Prikazi tabelu");
+        jButton_showCurrentScore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_showCurrentScoreActionPerformed(evt);
+            }
+        });
 
         jTextArea_questionField.setEditable(false);
         jTextArea_questionField.setBackground(new java.awt.Color(204, 255, 255));
@@ -192,7 +214,7 @@ public class ContestantGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("jLabel2");
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -253,7 +275,7 @@ public class ContestantGUI extends javax.swing.JFrame {
                     .addComponent(jButton_showCurrentScore)
                     .addComponent(jButton_requestQuestionSet)
                     .addComponent(jButton_nextQuestion))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -297,13 +319,22 @@ public class ContestantGUI extends javax.swing.JFrame {
 
     private void jButton_requestQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_requestQuestionSetActionPerformed
         // TODO add your handling code here:
+        jButton_50_50.setEnabled(true);
         jButton_answerA.setEnabled(true);
         jButton_answerB.setEnabled(true);
         jButton_answerC.setEnabled(true);
         jButton_answerD.setEnabled(true);
-        
-        jButton_50_50.setEnabled(true);
         jButton_friendsHelp.setEnabled(true);
+        jButton_nextQuestion.setEnabled(true);
+        jCombo_presentMembers.setEnabled(true);
+        jButton_answersFriend.setEnabled(true);
+        jButton_changeQuestion.setEnabled(true);
+        jButton_showCurrentScore.setEnabled(true);
+        
+        jLabel2.setText(parent.getUsernameFromTextField());
+        System.out.println("Korisnik :" + jLabel2.getText() + " se ulogovao!");
+        
+        refreshComboBoxes(parent.getPresentMembers());
         
         String[] question_answer = (parent.getQuestionAndAnswers().get(0)).split(";");
         String question  = question_answer[0];
@@ -334,6 +365,8 @@ public class ContestantGUI extends javax.swing.JFrame {
         {
             jCombo_presentMembers.addItem(member);
         }
+        
+        numberOfAnsweredSets += 10;
     }//GEN-LAST:event_jButton_requestQuestionSetActionPerformed
 
     private void jButton_nextQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_nextQuestionActionPerformed
@@ -484,6 +517,19 @@ public class ContestantGUI extends javax.swing.JFrame {
         this.pw.println(porukaZaSlanje);
     }//GEN-LAST:event_jButton_answersFriendActionPerformed
 
+    private void jButton_showCurrentScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_showCurrentScoreActionPerformed
+        // TODO add your handling code here:
+        Object[][] data = new Object[parent.getPresentMembers().size()][1];
+        String[] columnNames = {"Participant", "Score"};
+
+        for (int i = 0; i < parent.getPresentMembers().size(); i++) {
+            data[i][0] = parent.getPresentMembers().get(i);
+        }
+        
+        // Create an instance of the ScoreTableGUI
+        ScoreTableGUI scoreTableGUI = new ScoreTableGUI(data, columnNames);
+    }//GEN-LAST:event_jButton_showCurrentScoreActionPerformed
+
     private void disableButtonForIndex(int index) 
     {
         switch (index) {
@@ -504,11 +550,16 @@ public class ContestantGUI extends javax.swing.JFrame {
         }
 }
     
-    private static int handleAnswer(String answer, int numberOfTrueAnsweredQuestions, JButton buttonA, JButton buttonB, JButton buttonC, JButton buttonD) 
+    private int handleAnswer(String answer, int numberOfTrueAnsweredQuestions, JButton buttonA, JButton buttonB, JButton buttonC, JButton buttonD) 
     {
         if (answer.equals("true")) 
         {
             numberOfTrueAnsweredQuestions++;
+            
+            String porukaZaSlanje = "IncrementPoints =" + parent.getUsernameFromTextField() + ":" + numberOfTrueAnsweredQuestions + ":" + numberOfAnsweredSets;
+            this.pw.println(porukaZaSlanje);
+            System.out.println(porukaZaSlanje);
+            
             JOptionPane.showMessageDialog(null, "Correct Answer!\n" + numberOfTrueAnsweredQuestions + "/10");
         } 
         else 

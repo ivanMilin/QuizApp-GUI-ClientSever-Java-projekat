@@ -86,6 +86,7 @@ public class QuizServer {
     {
         this.clients = new ArrayList<>();
         this.presentMembers = new ArrayList<>();
+        //this.quizMembers = new ArrayList<>();
         
         try
         {
