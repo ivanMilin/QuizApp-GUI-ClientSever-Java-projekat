@@ -8,7 +8,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JOptionPane;
@@ -22,6 +24,7 @@ public class AdminGUI extends javax.swing.JFrame {
     QuizClient parent;
     private BufferedReader br;
     private ArrayList<String> comboboxUsers;
+    private Map<String, AbstractButton> memberButtonMap;
     /**
      * Creates new form AdminGUI
      */
@@ -31,6 +34,7 @@ public class AdminGUI extends javax.swing.JFrame {
         this.br = parent.getBr();
         initComponents();
         comboboxUsers = new ArrayList<>();
+        memberButtonMap = new HashMap<>();
         cbPresentMembers.removeAllItems();
         
         jButton_addUser.setEnabled(false);
@@ -140,6 +144,12 @@ public class AdminGUI extends javax.swing.JFrame {
         jButton_sendQuestionSet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_sendQuestionSetActionPerformed(evt);
+            }
+        });
+
+        cbPresentMembers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPresentMembersActionPerformed(evt);
             }
         });
 
@@ -355,32 +365,33 @@ public class AdminGUI extends javax.swing.JFrame {
     private void jButton_sendQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendQuestionSetActionPerformed
         // TODO add your handling code here:
         ButtonModel selectedModel = buttonGroup1.getSelection();
-        
-        if(selectedModel != null)
-        {
+    
+        if(selectedModel != null) {
             Enumeration<AbstractButton> buttons = buttonGroup1.getElements();
-            if(!cbPresentMembers.getSelectedItem().equals(parent.getUsernameFromTextField()))
-            {    
-                while(buttons.hasMoreElements())
-                {
+            String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
+
+            // Check if the selected member already has a radio button associated with it
+            if(memberButtonMap.containsKey(selectedMemberName)) {
+                JOptionPane.showMessageDialog(null, "You have already selected this"+"\n"+ "question set for this member.");
+                return;
+            }
+
+            if(!selectedMemberName.equals(parent.getUsernameFromTextField())) {    
+                while(buttons.hasMoreElements()) {
                     AbstractButton button = buttons.nextElement();
-                    if(button.isSelected())
-                    {
-                        String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
+                    if(button.isSelected()) {
+                        // Associate the selected radio button with the selected member
+                        memberButtonMap.put(selectedMemberName, button);
                         System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
                         String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
                         parent.getPw().println(porukaZaSlanje);
                     }
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "You can't send question set to yourself!");
             }
-            else
-            {
-                JOptionPane.showMessageDialog(null, "You can't send questionset to yourself!");
-            }
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(null, "You didn't chose question set");
+        } else {
+            JOptionPane.showMessageDialog(null, "You didn't choose a question set");
         }
     }//GEN-LAST:event_jButton_sendQuestionSetActionPerformed
 
@@ -394,6 +405,10 @@ public class AdminGUI extends javax.swing.JFrame {
         jButton_addUser.setEnabled(true);
         jButton_removeUser.setEnabled(true);
     }//GEN-LAST:event_jButton_checkFormatActionPerformed
+
+    private void cbPresentMembersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPresentMembersActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbPresentMembersActionPerformed
 
     /**
      * @param args the command line arguments

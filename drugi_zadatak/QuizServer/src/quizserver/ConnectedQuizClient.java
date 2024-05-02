@@ -235,6 +235,24 @@ public class ConnectedQuizClient implements Runnable{
                     rewriteScoreboardFile(scoreboardData);
                     sendPointsToScoreboard("./scoreboard.txt");
                 }
+                else if(line.startsWith("MemberLeft ="))
+                {
+                    String[] string = line.split("=");
+                    String removeMember = string[1];
+
+                    for(String qm : parent.getPresentMembers())
+                    {
+                        parent.getPresentMembers().remove(removeMember);
+                    }
+                    
+                    String porukaZaSlanje = "ActiveUsers =";
+                    for(String qm : parent.getPresentMembers())
+                    {
+                        porukaZaSlanje += qm + ":";
+                    }
+                    System.out.println(porukaZaSlanje);
+                    broadcastMessage(porukaZaSlanje);
+                }
             }
             catch(IOException ex)
             {

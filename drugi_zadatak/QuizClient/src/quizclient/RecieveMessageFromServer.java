@@ -141,7 +141,6 @@ public class RecieveMessageFromServer implements Runnable{
                         presentMembers.add(activeUsers[i]);
                         System.out.println(activeUsers[i]);
                     }
-                    //parent.setPresentMembers(presentMembers);
                     parent.setPresentMembers(presentMembers);
                     this.adminGUI.refreshComboBoxes(presentMembers);
                 }

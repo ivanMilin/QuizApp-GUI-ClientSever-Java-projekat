@@ -314,6 +314,8 @@ public class ContestantGUI extends javax.swing.JFrame {
 
     private void jButton_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_logoutActionPerformed
         // TODO add your handling code here:
+        String porukaZaSlanje = "MemberLeft =" + parent.getUsernameFromTextField();
+        this.pw.println(porukaZaSlanje);
         System.exit(0);
     }//GEN-LAST:event_jButton_logoutActionPerformed
 
