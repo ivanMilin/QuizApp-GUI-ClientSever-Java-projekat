@@ -23,14 +23,14 @@ public class RecieveMessageFromServer implements Runnable{
     ArrayList<QuizMemberClient> loadedClientsFromFile; //Ovaj naziv je ostao od pre pa da ne bih menjao kod zadrzao sam ga
     ArrayList<String> presentMembers;
     
-    public RecieveMessageFromServer(QuizClient parent, AdminGUI adminGUI)
+    public RecieveMessageFromServer(QuizClient parent, AdminGUI adminGUI,ContestantGUI contestantGUII)
     {
-        this.contestantGUII = new ContestantGUI(parent); 
+        this.contestantGUII = contestantGUII; 
         this.parent = parent;
         this.adminGUI = adminGUI;
         this.br     = parent.getBr();
         this.loadedClientsFromFile = new ArrayList<>(); 
-        this.contestantGUII = null;
+        //this.contestantGUII = null;
         this.presentMembers = new ArrayList<>();
     }
 
@@ -164,6 +164,27 @@ public class RecieveMessageFromServer implements Runnable{
                     for(int i = 0; i < users.length; i++)
                     {
                         parent.addMembersToScoreboard(users[i]);
+                    }
+                }
+                else if(line.startsWith("SetPoints ="))
+                {
+                    System.out.println(line);
+                    //SetPoints =jovan1:1/10#ivan1:1/10#
+                    String[] string = line.split("=");
+                    String[] subString = string[1].split("#");
+
+                    for(int i = 0; i < subString.length; i++)
+                    {
+                        String[] username_pointsSets = subString[i].split(":");
+                        String username =  username_pointsSets[0];
+                        String[] points_sets = username_pointsSets[1].split("/");
+                        
+                        if(parent.getUsernameFromTextField().equals(username))
+                        {
+                            parent.setPoints(Integer.parseInt(points_sets[0]));
+                            parent.setSets(Integer.parseInt(points_sets[1]));
+                            System.out.println("Name : Points, sets " + parent.getUsernameFromTextField() + " " + parent.getPoints() + " " + parent.getSets());
+                        }
                     }
                 }
             }

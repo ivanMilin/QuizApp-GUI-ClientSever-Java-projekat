@@ -253,6 +253,10 @@ public class ConnectedQuizClient implements Runnable{
                     System.out.println(porukaZaSlanje);
                     broadcastMessage(porukaZaSlanje);
                 }
+                else if(line.startsWith("SetPoints ="))
+                {
+                    setPointsIfMemberHasAlready();
+                }
             }
             catch(IOException ex)
             {
@@ -475,7 +479,7 @@ public class ConnectedQuizClient implements Runnable{
             e.printStackTrace();
         }
     }
-
+    // ===================================================================================
     private void sendPointsToScoreboard(String filename)
     {
         String porukaZaSlanje = "UpdateScoreboard =";
@@ -494,5 +498,24 @@ public class ConnectedQuizClient implements Runnable{
         }
         
         broadcastMessage(porukaZaSlanje);
+    }
+    // ===================================================================================
+    public void setPointsIfMemberHasAlready()
+    {
+        String porukaZaSlanje = "SetPoints =";
+        try(BufferedReader reader = new BufferedReader(new FileReader("./scoreboard.txt")))
+        {
+            String line;
+            while((line = reader.readLine()) != null)
+            {
+                porukaZaSlanje += line + "#";
+            }
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        System.out.println(porukaZaSlanje);
+        this.pw.println(porukaZaSlanje);
     }
 }

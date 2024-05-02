@@ -37,7 +37,9 @@ public class QuizClient extends javax.swing.JFrame {
     ArrayList<String> presentMembers;
     ArrayList<String> questionAndAnswers;
     ArrayList<String> scoreboardUsers;
-   
+    
+    private int points = 0;
+    private int sets = 0;
     /**
      * Creates new form QuizClient
      */
@@ -55,7 +57,7 @@ public class QuizClient extends javax.swing.JFrame {
             this.socket = new Socket("127.0.0.1", 6001);
             this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()), true); 
-            this.rmfs = new RecieveMessageFromServer(this, adminGUI);
+            this.rmfs = new RecieveMessageFromServer(this, adminGUI,contestantGUI);
             Thread thr = new Thread(rmfs);
             thr.start();
             
@@ -145,6 +147,22 @@ public class QuizClient extends javax.swing.JFrame {
 
     public ArrayList<String> getScoreboardUsers() {
         return scoreboardUsers;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public int getSets() {
+        return sets;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public void setSets(int sets) {
+        this.sets = sets;
     }
     
     /**

@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -49,7 +50,6 @@ public class ContestantGUI extends javax.swing.JFrame {
         this.twoOfFourAnswersFor50_50 = new ArrayList<>();
         this.parent = parent;
         this.pw = parent.getPw();
-        this.numberOfTrueAnsweredQuestions = 0;
         this.questionNumber = 0;
         initComponents();
         
@@ -60,12 +60,15 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerB.setEnabled(false);
         jButton_answerC.setEnabled(false);
         jButton_answerD.setEnabled(false);
+        jButton_refresh.setEnabled(false);
         jButton_friendsHelp.setEnabled(false);
         jButton_nextQuestion.setEnabled(false);
         jButton_answersFriend.setEnabled(false);
         jCombo_presentMembers.setEnabled(false);
         jButton_changeQuestion.setEnabled(false);
         jButton_showCurrentScore.setEnabled(false);
+        
+        jCombo_presentMembers.removeAllItems();
     }
 
      //jTextField_helpMeFriend
@@ -84,6 +87,7 @@ public class ContestantGUI extends javax.swing.JFrame {
             jCombo_presentMembers.addItem(member);
         }
     }
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -113,6 +117,7 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_nextQuestion = new javax.swing.JButton();
         jButton_answersFriend = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        jButton_refresh = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ContestantGUI");
@@ -184,6 +189,12 @@ public class ContestantGUI extends javax.swing.JFrame {
             }
         });
 
+        jCombo_presentMembers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCombo_presentMembersActionPerformed(evt);
+            }
+        });
+
         jButton_logout.setText("Odjavi se");
         jButton_logout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -216,51 +227,58 @@ public class ContestantGUI extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
+        jButton_refresh.setText("Refresh");
+        jButton_refresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_refreshActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_answersFriend))
+                        .addComponent(jButton_nextQuestion)
+                        .addGap(85, 85, 85)
+                        .addComponent(jButton_requestQuestionSet)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_showCurrentScore))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jButton_answerA, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                        .addComponent(jButton_answerC, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton_answerB, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_answerD, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton_50_50)
+                        .addGap(134, 134, 134)
+                        .addComponent(jButton_changeQuestion)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_friendsHelp))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCombo_presentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton_refresh))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton_nextQuestion)
-                                .addGap(85, 85, 85)
-                                .addComponent(jButton_requestQuestionSet)
+                                .addGap(109, 109, 109)
+                                .addComponent(jLabel1)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(38, 38, 38)
+                                .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton_showCurrentScore))
+                                .addComponent(jButton_logout))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton_answerA, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                                .addComponent(jButton_answerC, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton_answerB, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton_answerD, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton_50_50)
-                                .addGap(134, 134, 134)
-                                .addComponent(jButton_changeQuestion)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton_friendsHelp))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jCombo_presentMembers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(112, 112, 112)
-                                        .addComponent(jLabel1)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(41, 41, 41)
-                                        .addComponent(jTextField_helpMeFriend, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton_logout)))))))
+                                .addComponent(jButton_answersFriend)))))
                 .addGap(23, 23, 23))
             .addGroup(layout.createSequentialGroup()
                 .addGap(265, 265, 265)
@@ -288,14 +306,17 @@ public class ContestantGUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addGap(17, 17, 17)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_50_50)
-                    .addComponent(jButton_changeQuestion)
-                    .addComponent(jButton_friendsHelp))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_answersFriend)
-                .addGap(2, 2, 2)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton_50_50)
+                            .addComponent(jButton_changeQuestion)
+                            .addComponent(jButton_friendsHelp))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton_answersFriend)
+                        .addGap(2, 2, 2)
+                        .addComponent(jLabel1))
+                    .addComponent(jButton_refresh))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -315,7 +336,7 @@ public class ContestantGUI extends javax.swing.JFrame {
     private void jButton_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_logoutActionPerformed
         // TODO add your handling code here:
         String porukaZaSlanje = "MemberLeft =" + parent.getUsernameFromTextField();
-        this.pw.println(porukaZaSlanje);
+        parent.getPw().println(porukaZaSlanje);
         System.exit(0);
     }//GEN-LAST:event_jButton_logoutActionPerformed
 
@@ -326,6 +347,7 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerB.setEnabled(true);
         jButton_answerC.setEnabled(true);
         jButton_answerD.setEnabled(true);
+        jButton_refresh.setEnabled(true);
         jButton_friendsHelp.setEnabled(true);
         jButton_nextQuestion.setEnabled(true);
         jCombo_presentMembers.setEnabled(true);
@@ -333,10 +355,11 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_changeQuestion.setEnabled(true);
         jButton_showCurrentScore.setEnabled(true);
         
+        String requirePoints = "SetPoints =";
+        parent.getPw().println(requirePoints);
+        
         jLabel2.setText(parent.getUsernameFromTextField());
         System.out.println("Korisnik :" + jLabel2.getText() + " se ulogovao!");
-        
-        refreshComboBoxes(parent.getPresentMembers());
         
         String[] question_answer = (parent.getQuestionAndAnswers().get(0)).split(";");
         String question  = question_answer[0];
@@ -361,18 +384,12 @@ public class ContestantGUI extends javax.swing.JFrame {
         jButton_answerD.setText(answer3[0]);
 
         answersList.clear();
-        
-        jCombo_presentMembers.removeAllItems();
-        for(String member : parent.getPresentMembers())
-        {
-            jCombo_presentMembers.addItem(member);
-        }
-        
-        numberOfAnsweredSets += 10;
+        parent.setSets(parent.getSets() + 10);
     }//GEN-LAST:event_jButton_requestQuestionSetActionPerformed
 
     private void jButton_nextQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_nextQuestionActionPerformed
         // TODO add your handling code here:
+        
         jButton_answerA.setEnabled(true);
         jButton_answerB.setEnabled(true);
         jButton_answerC.setEnabled(true);
@@ -442,22 +459,22 @@ public class ContestantGUI extends javax.swing.JFrame {
 
     private void jButton_answerAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerAActionPerformed
         // TODO add your handling code here:
-        numberOfTrueAnsweredQuestions  =handleAnswer(answer0[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+        numberOfTrueAnsweredQuestions  =handleAnswer(answer0[1], jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
     }//GEN-LAST:event_jButton_answerAActionPerformed
 
     private void jButton_answerBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerBActionPerformed
         // TODO add your handling code here:
-        numberOfTrueAnsweredQuestions = handleAnswer(answer1[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+        numberOfTrueAnsweredQuestions = handleAnswer(answer1[1], jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
     }//GEN-LAST:event_jButton_answerBActionPerformed
 
     private void jButton_answerCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerCActionPerformed
         // TODO add your handling code here:
-        numberOfTrueAnsweredQuestions = handleAnswer(answer2[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+        numberOfTrueAnsweredQuestions = handleAnswer(answer2[1], jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
     }//GEN-LAST:event_jButton_answerCActionPerformed
 
     private void jButton_answerDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_answerDActionPerformed
         // TODO add your handling code here:
-        numberOfTrueAnsweredQuestions  = handleAnswer(answer3[1], numberOfTrueAnsweredQuestions, jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
+        numberOfTrueAnsweredQuestions  = handleAnswer(answer3[1], jButton_answerA, jButton_answerB, jButton_answerC, jButton_answerD);
     }//GEN-LAST:event_jButton_answerDActionPerformed
 
     private void jButton_50_50ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_50_50ActionPerformed
@@ -499,7 +516,7 @@ public class ContestantGUI extends javax.swing.JFrame {
         String porukaZaSlanje = "HelpMeFriend =" + parent.getUsernameFromTextField() +":"+ selectedMemberName +"|"+ jTextArea_questionField.getText();
              
         System.out.println(porukaZaSlanje);
-        this.pw.println(porukaZaSlanje);
+        parent.getPw().println(porukaZaSlanje);
         
         jButton_friendsHelp.setEnabled(false);
     }//GEN-LAST:event_jButton_friendsHelpActionPerformed
@@ -516,7 +533,8 @@ public class ContestantGUI extends javax.swing.JFrame {
         
         String porukaZaSlanje = "AnswerForFriend =" + selectedMemberName +"|"+ parent.getUsernameFromTextField() + ":" + answerForFriend;
         System.out.println(porukaZaSlanje);
-        this.pw.println(porukaZaSlanje);
+        parent.getPw().println(porukaZaSlanje);
+        jButton_answersFriend.setEnabled(false);
     }//GEN-LAST:event_jButton_answersFriendActionPerformed
 
     private void jButton_showCurrentScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_showCurrentScoreActionPerformed
@@ -524,6 +542,16 @@ public class ContestantGUI extends javax.swing.JFrame {
         Object[][] data = new Object[parent.getScoreboardUsers().size()][2]; // Change the size to accommodate two columns
         String[] columnNames = {"Participant", "Score"};
 
+        Collections.sort(parent.getScoreboardUsers(), new Comparator<String>(){
+            @Override
+            public int compare(String s1, String s2)
+            {
+                int num1 = Integer.parseInt(s1.split(":")[1].split("/")[0]);
+                int num2 = Integer.parseInt(s2.split(":")[1].split("/")[0]);
+                return Integer.compare(num2, num1);
+            }
+        });
+        
         for (int i = 0; i < parent.getScoreboardUsers().size(); i++) {
             String[] line = parent.getScoreboardUsers().get(i).split(":");
             data[i][0] = line[0]; // Participant name
@@ -533,6 +561,18 @@ public class ContestantGUI extends javax.swing.JFrame {
         // Create an instance of the ScoreTableGUI
         ScoreTableGUI scoreTableGUI = new ScoreTableGUI(data, columnNames);
     }//GEN-LAST:event_jButton_showCurrentScoreActionPerformed
+
+    private void jCombo_presentMembersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCombo_presentMembersActionPerformed
+        // TODO add your handling code here:
+        //jCombo_presentMembers.removeAllItems();
+        //refreshComboBoxes(parent.getPresentMembers());
+    }//GEN-LAST:event_jCombo_presentMembersActionPerformed
+
+    private void jButton_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_refreshActionPerformed
+        // TODO add your handling code here:
+        jCombo_presentMembers.removeAllItems();
+        refreshComboBoxes(parent.getPresentMembers());
+    }//GEN-LAST:event_jButton_refreshActionPerformed
 
     private void disableButtonForIndex(int index) 
     {
@@ -554,28 +594,31 @@ public class ContestantGUI extends javax.swing.JFrame {
         }
 }
     
-    private int handleAnswer(String answer, int numberOfTrueAnsweredQuestions, JButton buttonA, JButton buttonB, JButton buttonC, JButton buttonD) 
+    private int handleAnswer(String answer,JButton buttonA, JButton buttonB, JButton buttonC, JButton buttonD) 
     {
+        this.numberOfTrueAnsweredQuestions = parent.getPoints();
+        this.numberOfAnsweredSets = parent.getSets();
+        
         if (answer.equals("true")) 
         {
-            numberOfTrueAnsweredQuestions++;
+            parent.setPoints(parent.getPoints() + 1);//numberOfTrueAnsweredQuestions++;
             
-            String porukaZaSlanje = "IncrementPoints =" + parent.getUsernameFromTextField() + ":" + numberOfTrueAnsweredQuestions + ":" + numberOfAnsweredSets;
-            this.pw.println(porukaZaSlanje);
+            String porukaZaSlanje = "IncrementPoints =" + parent.getUsernameFromTextField() + ":" + parent.getPoints() + ":" + parent.getSets();
+            parent.getPw().println(porukaZaSlanje);
             System.out.println(porukaZaSlanje);
             
-            JOptionPane.showMessageDialog(null, "Correct Answer!\n" + numberOfTrueAnsweredQuestions + "/10");
+            JOptionPane.showMessageDialog(null, "Correct Answer!\n" + parent.getPoints() + "/" + parent.getSets());
         } 
         else 
         {
-            JOptionPane.showMessageDialog(null, "Wrong Answer!\n" + numberOfTrueAnsweredQuestions + "/10");
+            JOptionPane.showMessageDialog(null, "Wrong Answer!\n" + parent.getPoints() + "/" + parent.getSets());
         }
         buttonA.setEnabled(false);
         buttonB.setEnabled(false);
         buttonC.setEnabled(false);
         buttonD.setEnabled(false);
         
-        return numberOfTrueAnsweredQuestions;
+        return parent.getPoints();
     }
         
     /**
@@ -627,6 +670,7 @@ public class ContestantGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton_friendsHelp;
     private javax.swing.JButton jButton_logout;
     private javax.swing.JButton jButton_nextQuestion;
+    private javax.swing.JButton jButton_refresh;
     private javax.swing.JButton jButton_requestQuestionSet;
     private javax.swing.JButton jButton_showCurrentScore;
     private javax.swing.JComboBox<String> jCombo_presentMembers;
