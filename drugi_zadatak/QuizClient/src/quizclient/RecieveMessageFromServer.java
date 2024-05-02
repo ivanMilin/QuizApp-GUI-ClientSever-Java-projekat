@@ -51,7 +51,6 @@ public class RecieveMessageFromServer implements Runnable{
             try
             {
                 line = this.br.readLine();
-                System.out.println(line);
                 if(line.startsWith("RecievingQuestionSet ="))
                 {
                     String[] beforeUsername_username_QuestionsAndAnswers = (line.split("="));
@@ -156,7 +155,17 @@ public class RecieveMessageFromServer implements Runnable{
                 }
                 else if(line.startsWith("UpdateScoreboard ="))
                 {
+                    //UpdateScoreboard =jovan1:1/10#ivan1:1/10#
                     System.out.println(line);
+                    String[] string = line.split("=");
+                    String[] users = string[1].split("#");
+                    
+                    parent.removeMembersFromScoreboard();
+
+                    for(int i = 0; i < users.length; i++)
+                    {
+                        parent.addMembersToScoreboard(users[i]);
+                    }
                 }
             }
             catch(IOException ex)

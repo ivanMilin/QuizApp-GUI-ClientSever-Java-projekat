@@ -519,13 +519,15 @@ public class ContestantGUI extends javax.swing.JFrame {
 
     private void jButton_showCurrentScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_showCurrentScoreActionPerformed
         // TODO add your handling code here:
-        Object[][] data = new Object[parent.getPresentMembers().size()][1];
+        Object[][] data = new Object[parent.getScoreboardUsers().size()][2]; // Change the size to accommodate two columns
         String[] columnNames = {"Participant", "Score"};
 
-        for (int i = 0; i < parent.getPresentMembers().size(); i++) {
-            data[i][0] = parent.getPresentMembers().get(i);
+        for (int i = 0; i < parent.getScoreboardUsers().size(); i++) {
+            String[] line = parent.getScoreboardUsers().get(i).split(":");
+            data[i][0] = line[0]; // Participant name
+            data[i][1] = line[1]; // Score
         }
-        
+
         // Create an instance of the ScoreTableGUI
         ScoreTableGUI scoreTableGUI = new ScoreTableGUI(data, columnNames);
     }//GEN-LAST:event_jButton_showCurrentScoreActionPerformed

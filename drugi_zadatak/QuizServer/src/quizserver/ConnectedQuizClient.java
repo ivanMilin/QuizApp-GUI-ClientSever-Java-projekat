@@ -79,35 +79,12 @@ public class ConnectedQuizClient implements Runnable{
             Logger.getLogger(ConnectedQuizClient.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
-    
-    void connectedClientsUpdateStatus()
-    {
-        String connectedUsers = "stariKOD_Users:";
 
-        for(ConnectedQuizClient c : this.allClients)
-        {
-            connectedUsers += " " + c.getUserName();
-        }
-        
-        for(ConnectedQuizClient svimaUpdateCB : this.allClients)
-        {
-            svimaUpdateCB.pw.println(connectedUsers);
-        }
-        System.out.println("Korisnici :" + connectedUsers); 
-    }
-    
-    public void broadcastMessage(String message)
-    {
-        for(ConnectedQuizClient client : allClients)
-        {
-            client.sendMessage(message);
-        }
-    }
-    
     public void sendMessage(String message)
     {
         pw.println(message);
     }
+
     @Override
     public void run()
     {
@@ -256,6 +233,7 @@ public class ConnectedQuizClient implements Runnable{
 
                     // Rewrite the scoreboard file
                     rewriteScoreboardFile(scoreboardData);
+                    sendPointsToScoreboard("./scoreboard.txt");
                 }
             }
             catch(IOException ex)
@@ -266,7 +244,14 @@ public class ConnectedQuizClient implements Runnable{
     }
     
     // ===================================================================================
-    // Ova metoda se poziva kad admin hoce da doda ili obrise korisnika iz fajla
+    public void broadcastMessage(String message)
+    {
+        for(ConnectedQuizClient client : allClients)
+        {
+            client.sendMessage(message);
+        }
+    }
+    // ===================================================================================
     public static void removeUserFromFile(String usernameToRemove, String filePath) {
         // Read the file and load its content into an ArrayList
         ArrayList<String> usersFromFile = new ArrayList<>();
@@ -301,7 +286,6 @@ public class ConnectedQuizClient implements Runnable{
 
         System.out.println("User '" + usernameToRemove + "' removed from the file.");
     }
-
     // ===================================================================================
     public static void addUserToFile(String newUser, String filePath) {
         // Read the file and load its content into an ArrayList
@@ -331,7 +315,6 @@ public class ConnectedQuizClient implements Runnable{
 
         System.out.println("New user added to the file : " + newUser);
     }
-     
     // ===================================================================================
     public static void loadQuestionAndAnswersFromFile(ArrayList<String> set, String filePath) 
     {
@@ -373,7 +356,6 @@ public class ConnectedQuizClient implements Runnable{
             System.out.println("Problem pri radu metode 'loadQuestionAndAnswersFromFile'");
         }
     }
-
     // ===================================================================================
     public static String concatenate_QuestionsAndAnswersFromSet_inOneString(ArrayList<String> set)
     {
@@ -384,7 +366,6 @@ public class ConnectedQuizClient implements Runnable{
         }
         return builder.toString();
     }
-    
     // ===================================================================================
     public void checkLoginFormat(ArrayList<QuizMember> quizMembers, PrintWriter pw, String username, String password, String role)
     {
@@ -429,7 +410,6 @@ public class ConnectedQuizClient implements Runnable{
             this.pw.println(porukaZaSlanje);
         }
     }
-
     // ===================================================================================
     public void voidCheckFormatForNewMembers(String username, String password)
     {
@@ -476,5 +456,25 @@ public class ConnectedQuizClient implements Runnable{
         {
             e.printStackTrace();
         }
+    }
+
+    private void sendPointsToScoreboard(String filename)
+    {
+        String porukaZaSlanje = "UpdateScoreboard =";
+        
+        try(BufferedReader reader = new BufferedReader(new FileReader(filename)))
+        {
+            String line;
+            while((line = reader.readLine()) != null)
+            {
+                porukaZaSlanje += line + "#";
+            }
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        broadcastMessage(porukaZaSlanje);
     }
 }

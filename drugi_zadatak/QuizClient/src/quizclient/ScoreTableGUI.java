@@ -1,30 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package quizclient;
 
-/**
- *
- * @author Ivan Milin
- */
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 
-public class ScoreTableGUI extends JFrame 
-{
+public class ScoreTableGUI extends JFrame {
     private JTable scoreTable;
 
-    public ScoreTableGUI(Object[][] data, String[] columnNames) 
-    {
-        super("Score Table");
+    public ScoreTableGUI(Object[][] data, String[] columnNames) {
+        super("Scoreboard");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
+
         // Create a table model
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
 
-        // Create the JTable
         scoreTable = new JTable(model);
+
+        Font font = scoreTable.getFont().deriveFont(Font.PLAIN, 14f);
+        scoreTable.setFont(font);
 
         // Add the table to a scroll pane
         JScrollPane scrollPane = new JScrollPane(scoreTable);

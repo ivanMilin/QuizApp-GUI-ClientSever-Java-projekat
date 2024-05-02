@@ -35,8 +35,8 @@ public class QuizClient extends javax.swing.JFrame {
     ContestantGUI contestantGUI;
     ArrayList<QuizMemberClient> activeMembers;
     ArrayList<String> presentMembers;
-    
     ArrayList<String> questionAndAnswers;
+    ArrayList<String> scoreboardUsers;
    
     /**
      * Creates new form QuizClient
@@ -45,6 +45,7 @@ public class QuizClient extends javax.swing.JFrame {
         this.activeMembers = new ArrayList<>();
         this.questionAndAnswers = new ArrayList<>();
         this.presentMembers = new ArrayList<>();
+        this.scoreboardUsers = new ArrayList<>();
         initComponents(); 
         
         try
@@ -132,6 +133,20 @@ public class QuizClient extends javax.swing.JFrame {
         return presentMembers;
     }
 
+    public void addMembersToScoreboard(String member)
+    {
+        scoreboardUsers.add(member);
+    }
+    
+    public void removeMembersFromScoreboard()
+    {
+        scoreboardUsers.clear();
+    }
+
+    public ArrayList<String> getScoreboardUsers() {
+        return scoreboardUsers;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
