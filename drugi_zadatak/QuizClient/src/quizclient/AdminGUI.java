@@ -9,8 +9,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JOptionPane;
@@ -25,6 +27,7 @@ public class AdminGUI extends javax.swing.JFrame {
     private BufferedReader br;
     private ArrayList<String> comboboxUsers;
     private Map<String, AbstractButton> memberButtonMap;
+    ArrayList<String> alreadyUsed;
     /**
      * Creates new form AdminGUI
      */
@@ -35,6 +38,7 @@ public class AdminGUI extends javax.swing.JFrame {
         initComponents();
         comboboxUsers = new ArrayList<>();
         memberButtonMap = new HashMap<>();
+        alreadyUsed = new ArrayList<>();
         cbPresentMembers.removeAllItems();
         
         jButton_addUser.setEnabled(false);
@@ -365,33 +369,42 @@ public class AdminGUI extends javax.swing.JFrame {
     private void jButton_sendQuestionSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendQuestionSetActionPerformed
         // TODO add your handling code here:
         ButtonModel selectedModel = buttonGroup1.getSelection();
-    
-        if(selectedModel != null) {
+        
+        if(selectedModel != null)
+        {
             Enumeration<AbstractButton> buttons = buttonGroup1.getElements();
-            String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
-
-            // Check if the selected member already has a radio button associated with it
-            if(memberButtonMap.containsKey(selectedMemberName)) {
-                JOptionPane.showMessageDialog(null, "You have already selected this"+"\n"+ "question set for this member.");
-                return;
-            }
-
-            if(!selectedMemberName.equals(parent.getUsernameFromTextField())) {    
-                while(buttons.hasMoreElements()) {
+            if(!cbPresentMembers.getSelectedItem().equals(parent.getUsernameFromTextField()))
+            {    
+                while(buttons.hasMoreElements())
+                {
                     AbstractButton button = buttons.nextElement();
-                    if(button.isSelected()) {
-                        // Associate the selected radio button with the selected member
-                        memberButtonMap.put(selectedMemberName, button);
+                    if(button.isSelected())
+                    {
+                        String selectedMemberName = (String) cbPresentMembers.getSelectedItem();
                         System.out.println("SendQuestionSetTo =" + selectedMemberName + ":" + button.getText());
                         String porukaZaSlanje = "SendQuestionSetTo =" + selectedMemberName + ":" + button.getText();
-                        parent.getPw().println(porukaZaSlanje);
+                        
+                        if(alreadyUsed.contains(porukaZaSlanje) && !alreadyUsed.isEmpty())
+                        {
+                            JOptionPane.showMessageDialog(null, "You have already used this combination. Please try another one.");
+                            return; // Return without further processing
+                        }
+                        else
+                        {
+                            alreadyUsed.add(porukaZaSlanje);
+                            parent.getPw().println(porukaZaSlanje);
+                        }
                     }
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "You can't send question set to yourself!");
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "You didn't choose a question set");
+            else
+            {
+                JOptionPane.showMessageDialog(null, "You can't send questionset to yourself!");
+            }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "You didn't chose question set");
         }
     }//GEN-LAST:event_jButton_sendQuestionSetActionPerformed
 

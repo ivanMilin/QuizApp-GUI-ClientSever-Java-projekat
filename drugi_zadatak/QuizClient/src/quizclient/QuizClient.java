@@ -337,13 +337,13 @@ public class QuizClient extends javax.swing.JFrame {
         } 
         else if (loginNumber == 2) 
         {
+            JOptionPane.showMessageDialog(null, "Wrong Login Format/User does not exist!"); 
             jButton_login.setEnabled(false);
-            JOptionPane.showMessageDialog(null, "Wrong Login Format/User does not exist!");            
         }   
         else if(loginNumber == 4)
         {
-            jButton_login.setEnabled(false);
             JOptionPane.showMessageDialog(null, "Wrong Login Format/User does not exist!");
+            jButton_login.setEnabled(false);
         }
     }//GEN-LAST:event_jButton_loginActionPerformed
 
