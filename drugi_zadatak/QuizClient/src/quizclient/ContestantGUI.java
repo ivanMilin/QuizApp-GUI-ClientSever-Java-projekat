@@ -131,7 +131,7 @@ public class ContestantGUI extends javax.swing.JFrame {
         });
 
         jTextArea_questionField.setEditable(false);
-        jTextArea_questionField.setBackground(new java.awt.Color(204, 255, 255));
+        jTextArea_questionField.setBackground(new java.awt.Color(255, 255, 255));
         jTextArea_questionField.setColumns(20);
         jTextArea_questionField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTextArea_questionField.setRows(5);
@@ -542,6 +542,7 @@ public class ContestantGUI extends javax.swing.JFrame {
         Object[][] data = new Object[parent.getScoreboardUsers().size()][2]; // Change the size to accommodate two columns
         String[] columnNames = {"Participant", "Score"};
 
+        /*
         Collections.sort(parent.getScoreboardUsers(), new Comparator<String>(){
             @Override
             public int compare(String s1, String s2)
@@ -551,6 +552,7 @@ public class ContestantGUI extends javax.swing.JFrame {
                 return Integer.compare(num2, num1);
             }
         });
+        */
         
         for (int i = 0; i < parent.getScoreboardUsers().size(); i++) {
             String[] line = parent.getScoreboardUsers().get(i).split(":");

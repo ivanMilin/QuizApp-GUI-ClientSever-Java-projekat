@@ -4,8 +4,14 @@
  */
 package quizserver;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,9 +21,19 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import static quizserver.QuizServer.createInitializationVector;
 
 /**
  *
@@ -40,6 +56,13 @@ public class ConnectedQuizClient implements Runnable{
     private ArrayList<QuizMember> quizMembers;
     private ArrayList<QuizMember> presentMembers;
     
+    private static final String AES = "AES";
+    private static final String AES_CIPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
+    private static Scanner message;
+    
+    private SecretKey symmetricKey = null;                
+    private byte[] initializationVector;  
+
     public String getUserName()
     {
         return userName;
@@ -50,7 +73,7 @@ public class ConnectedQuizClient implements Runnable{
         this.userName = userName;
     }
     
-    public ConnectedQuizClient(Socket socket, ArrayList<ConnectedQuizClient> allClients, QuizServer parent)
+    public ConnectedQuizClient(Socket socket, ArrayList<ConnectedQuizClient> allClients, QuizServer parent) throws Exception
     {
         this.socket = socket;
         this.allClients = allClients;
@@ -62,6 +85,9 @@ public class ConnectedQuizClient implements Runnable{
         questionSet4 = new ArrayList<>();
         quizMembers = new ArrayList<>();
         presentMembers = new ArrayList<>();
+        
+        this.symmetricKey = parent.getSymmetricKey();                
+        this.initializationVector = parent.getInitializationVector();
         
         loadQuestionAndAnswersFromFile(questionSet1, "./set1.txt");
         loadQuestionAndAnswersFromFile(questionSet2, "./set2.txt");
@@ -77,7 +103,8 @@ public class ConnectedQuizClient implements Runnable{
         catch(IOException ex)
         {
             Logger.getLogger(ConnectedQuizClient.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
+        //saveEncyptedAdmin();
     }
 
     public void sendMessage(String message)
@@ -96,12 +123,7 @@ public class ConnectedQuizClient implements Runnable{
             {
                 line = this.br.readLine();
                 
-                if(line.startsWith("New user ="))
-                {
-                    String[] newUser = line.split("=");
-                    System.out.println("New user = " + newUser[1].trim());
-                }
-                else if(line.startsWith("SendQuestionSetTo ="))
+                if(line.startsWith("SendQuestionSetTo ="))
                 {
                     String[] questionSetRequest = line.split("=");
                     System.out.println("SendQuestionSetTo =" + questionSetRequest[1].trim());
@@ -183,6 +205,7 @@ public class ConnectedQuizClient implements Runnable{
                     String[] string = line.split("=");
                     String removeUser = string[1];
                     removeUserFromFile(removeUser, "./users.txt");
+                    removeUserFromEncyptedFile(removeUser, "./users_encrypted.txt");
 
                 }
                 else if(line.startsWith("AddNewUser ="))
@@ -190,6 +213,7 @@ public class ConnectedQuizClient implements Runnable{
                     String[] string = line.split("=");
                     String addNewUser = string[1];
                     addUserToFile(addNewUser,"./users.txt");
+                    addUserToEncrpytedFile(addNewUser,"./users_encrypted.txt");
                     
                     String[] user = addNewUser.split(":");
                     if(user[2].equals("contestant"))
@@ -252,6 +276,8 @@ public class ConnectedQuizClient implements Runnable{
                     }
                     System.out.println(porukaZaSlanje);
                     broadcastMessage(porukaZaSlanje);
+                    this.socket.close();
+                    break;
                 }
                 else if(line.startsWith("SetPoints ="))
                 {
@@ -260,10 +286,30 @@ public class ConnectedQuizClient implements Runnable{
             }
             catch(IOException ex)
             {
-                //System.out.println("Disconnected user: " + this.userName);
+                //ex.printStackTrace();
             }
         }
     }
+    //=> Enkripcija
+    public static byte[] do_AESEncryption(String plainText, SecretKey secretKey, byte[] initializationVector) throws Exception 
+    {
+        Cipher cipher = Cipher.getInstance(AES_CIPHER_ALGORITHM);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(initializationVector);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+        return cipher.doFinal(plainText.getBytes());
+    }
+    
+    public static String do_AESDecryption(byte[] cipherText, SecretKey secretKey, byte[] initializationVector) throws Exception 
+    {
+        Cipher cipher = Cipher.getInstance(AES_CIPHER_ALGORITHM);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(initializationVector);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+
+        byte[] result = cipher.doFinal(cipherText);
+
+        return new String(result);
+    }
+    //<= Enkripcija
     
     // ===================================================================================
     public void broadcastMessage(String message)
@@ -309,32 +355,38 @@ public class ConnectedQuizClient implements Runnable{
         System.out.println("User '" + usernameToRemove + "' removed from the file.");
     }
     // ===================================================================================
-    public static void addUserToFile(String newUser, String filePath) {
-        // Read the file and load its content into an ArrayList
+    public static void addUserToFile(String newUser, String filePath) 
+    {
         ArrayList<String> usersFromFile = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) 
+        {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) 
+            {
                 usersFromFile.add(line);
             }
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             e.printStackTrace();
             return;
         }
 
-        // Add the new user to the end of the ArrayList
         usersFromFile.add(newUser);
 
         // Write the updated ArrayList back to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            for (String user : usersFromFile) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) 
+        {
+            for (String user : usersFromFile) 
+            {
                 writer.write(user);
                 writer.newLine();
             }
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             e.printStackTrace();
         }
-
         System.out.println("New user added to the file : " + newUser);
     }
     // ===================================================================================
@@ -395,20 +447,26 @@ public class ConnectedQuizClient implements Runnable{
             password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$") && 
             role.matches("^(admin|contestant)$"))
         {
-            String filePath_to_users = "./users.txt";
+            String filePath_to_users = "./users_encrypted.txt";
             
-            try (BufferedReader players_from_file = new BufferedReader(new FileReader(filePath_to_users))) {
-                String file_line;
-                while ((file_line = players_from_file.readLine()) != null) 
+            try(DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath_to_users)))) 
+            {
+                byte[] encryptedData = new byte[dis.available()];
+                dis.readFully(encryptedData);
+                String decryptedData = do_AESDecryption(encryptedData, symmetricKey, initializationVector);
+                System.out.println("checkLoginFormat : " + decryptedData);
+                String[] allUsersData = decryptedData.split("\n");
+
+                for(String file_line : allUsersData) 
                 {
-                    String[] usernamePasswordRole_line = file_line.split(":");
+                    String[] usernamePasswordRole_line = (file_line.trim()).split(":");
                     quizMembers.add(new QuizMember(usernamePasswordRole_line[0],usernamePasswordRole_line[1],usernamePasswordRole_line[2]));
                 }
             } 
-            catch (IOException ex) {
+            catch (Exception ex) 
+            {
                 ex.printStackTrace();
-                System.out.println("Nisam uspeo da ucitam fajl 'users.txt' ");
-            } 
+            }
             
             for(QuizMember qm : quizMembers)
             {   
@@ -483,13 +541,31 @@ public class ConnectedQuizClient implements Runnable{
     private void sendPointsToScoreboard(String filename)
     {
         String porukaZaSlanje = "UpdateScoreboard =";
+        ArrayList<String> sortedArray = new ArrayList<>();
         
         try(BufferedReader reader = new BufferedReader(new FileReader(filename)))
         {
             String line;
+            
             while((line = reader.readLine()) != null)
             {
-                porukaZaSlanje += line + "#";
+                sortedArray.add(line);
+                //porukaZaSlanje += line + "#";
+            }
+            
+            Collections.sort(sortedArray, new Comparator<String>(){
+            @Override
+            public int compare(String s1, String s2)
+            {
+                int num1 = Integer.parseInt(s1.split(":")[1].split("/")[0]);
+                int num2 = Integer.parseInt(s2.split(":")[1].split("/")[0]);
+                return Integer.compare(num2, num1);
+            }
+            });
+            
+            for(String s: sortedArray)
+            {    
+                porukaZaSlanje += s + "#";
             }
         }
         catch(IOException ex)
@@ -517,5 +593,119 @@ public class ConnectedQuizClient implements Runnable{
         }
         System.out.println(porukaZaSlanje);
         this.pw.println(porukaZaSlanje);
+    }
+    // ===================================================================================
+    public void saveEncyptedAdmin() throws Exception
+    {
+        try
+        {
+            String admin_encrypted = "admin1:Adminn#1:admin" + "\n";
+            byte[] encyptedData = do_AESEncryption(admin_encrypted, symmetricKey, initializationVector);
+            
+            try(DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("./users_encrypted.txt"))))
+            {
+                dos.write(encyptedData);
+            }
+            catch(IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+        }        
+    }
+
+    public void addUserToEncrpytedFile(String addNewUser, String fileName)
+    {
+        String[] linesInFile;
+        
+        ArrayList<String> loadedUsersFromEncrypted = new ArrayList<>();
+        loadedUsersFromEncrypted.clear();
+        
+        try(DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)))) 
+        {
+            byte[] encryptedData = new byte[dis.available()];
+            dis.readFully(encryptedData);
+            String decryptedData = do_AESDecryption(encryptedData, symmetricKey, initializationVector);
+            String[] allUsersData = decryptedData.split("\n");
+
+            for(String user : allUsersData)
+            {
+                loadedUsersFromEncrypted.add(user);
+            }
+            loadedUsersFromEncrypted.add(addNewUser);
+
+            String allUsersInOneString = "";
+
+            for(String user : loadedUsersFromEncrypted)
+            {
+                allUsersInOneString += user + "\n";
+            }
+            System.out.println("After adding in addUserToEncrpytedFile : " + allUsersInOneString);
+            
+            
+            byte[] newEncryptedData = do_AESEncryption(allUsersInOneString, parent.getSymmetricKey(), parent.getInitializationVector()); 
+
+            try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) 
+            {
+                dos.write(newEncryptedData);
+            } 
+            catch (IOException ex) 
+            {
+                ex.printStackTrace();
+            }
+        } 
+        catch (Exception ex) 
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public void removeUserFromEncyptedFile(String userToRemoveFromEncrypted, String fileName)
+    {
+        ArrayList<String> loadedUsersFromEncrypted = new ArrayList<>();
+        loadedUsersFromEncrypted.clear();
+        
+        try(DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)))) 
+        {
+            byte[] encryptedData = new byte[dis.available()];
+            dis.readFully(encryptedData);
+            String decryptedData = do_AESDecryption(encryptedData, symmetricKey, initializationVector);
+            String[] allUsersData = decryptedData.split("\n");
+
+            for(String user : allUsersData)
+            {
+                loadedUsersFromEncrypted.add(user);
+            }
+
+            loadedUsersFromEncrypted.removeIf(user -> user.startsWith(userToRemoveFromEncrypted + ":"));
+
+            String allUsersInOneString = "";
+
+            System.out.println("After removing in encripted : ");
+            for(String user : loadedUsersFromEncrypted)
+            {
+                System.out.print(user);
+                allUsersInOneString += user + "\n";
+            }
+            System.out.println("After encription : \n" + allUsersInOneString);
+
+            byte[] newEncryptedData = do_AESEncryption(allUsersInOneString, parent.getSymmetricKey(), parent.getInitializationVector()); 
+
+            try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) 
+            {
+                dos.write(newEncryptedData);
+            } 
+            catch (IOException ex) 
+            {
+                ex.printStackTrace();
+            }
+        } 
+        catch (Exception ex) 
+        {
+            ex.printStackTrace();
+        }
     }
 }

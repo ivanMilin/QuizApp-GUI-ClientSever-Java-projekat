@@ -7,9 +7,13 @@ package quizserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 
 /**
@@ -22,6 +26,12 @@ public class QuizServer {
     private int port;
     private ArrayList<ConnectedQuizClient> clients;
     private ArrayList<String> presentMembers;
+    
+    private static final String AES = "AES";
+    private static final String AES_CIPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
+    
+    private SecretKey symmetricKey = null;                // OVO DODAJ KAD NAMESTIS METODU
+    private static byte[] initializationVector = createInitializationVector();   // OVO DODAJ KAD NAMESTIS METODU
     
     public ServerSocket getSsocket()
     {
@@ -51,8 +61,16 @@ public class QuizServer {
     public ArrayList<String> getPresentMembers() {
         return presentMembers;
     }
+
+    public SecretKey getSymmetricKey() {
+        return symmetricKey;
+    }
+
+    public byte[] getInitializationVector() {
+        return initializationVector;
+    }
     
-    public void acceptClients()
+    public void acceptClients() throws Exception
     {
         Socket client = null;
         Thread thr;
@@ -86,7 +104,8 @@ public class QuizServer {
     {
         this.clients = new ArrayList<>();
         this.presentMembers = new ArrayList<>();
-        //this.quizMembers = new ArrayList<>();
+        symmetricKey = createAESKey();
+        initializationVector = createInitializationVector();
         
         try
         {
@@ -99,10 +118,38 @@ public class QuizServer {
         }
     }
     
+    public static SecretKey createAESKey()
+    {
+        try
+        {
+            SecureRandom securerandom = new SecureRandom("RSZEOS2024".getBytes());
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(AES);
+            keyGenerator.init(128, securerandom);
+            SecretKey key = keyGenerator.generateKey();
+
+            return key;
+        }
+        catch(NoSuchAlgorithmException ex)
+        {
+            Logger.getLogger(ConnectedQuizClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public static byte[] createInitializationVector() 
+    {
+        byte[] initializationVector = new byte[16];
+        for (int i = 0; i < 16; i++) 
+        {
+            initializationVector[i] = (byte) (i + 1);
+        }
+        return initializationVector;
+    }
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // TODO code application logic here
         QuizServer server = new QuizServer(6001);
         
