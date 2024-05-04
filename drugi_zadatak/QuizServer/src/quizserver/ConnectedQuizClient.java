@@ -489,6 +489,7 @@ public class ConnectedQuizClient implements Runnable{
             String porukaZaSlanje = "WrongLoginFormat =";
             this.pw.println(porukaZaSlanje);
         }
+        quizMembers.clear();
     }
     // ===================================================================================
     public void voidCheckFormatForNewMembers(String username, String password)
