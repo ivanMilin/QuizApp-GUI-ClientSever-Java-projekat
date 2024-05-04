@@ -1,2 +1,1 @@
 admin1:Adminn#1:admin
-ivan1:Ivann#1:contestant
